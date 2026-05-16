@@ -1,733 +1,432 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Emerald Path Quest</title>
-
+<title>Step Quest Emerald Bridge</title>
 <style>
-*{
-  box-sizing:border-box;
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,sans-serif}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:transparent;color:white}
+
+:root{
+  --emerald:#00ff8a;
+  --emerald2:#55ffb8;
+  --glass:rgba(10,35,25,.48);
+  --glass2:rgba(255,255,255,.11);
 }
 
-body{
-  margin:0;
-  overflow:hidden;
-  font-family:Arial, sans-serif;
-  background:#071b12;
-}
+/* TOP UI */
+#topUI{position:absolute;top:24px;left:38px;right:38px;z-index:300;display:grid;grid-template-columns:260px 1fr 300px;gap:32px;align-items:start;pointer-events:none}
+.glass-box{background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.06));border:2px solid rgba(255,255,255,.62);border-radius:24px;box-shadow:0 0 22px rgba(0,255,138,.22),inset 0 0 26px rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:auto}
+#lives{height:76px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:42px;text-shadow:0 3px 8px rgba(0,0,0,.35)}
+#soundBox{height:76px;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 18px}
+#muteBtn{border:none;background:transparent;font-size:30px;cursor:pointer;color:white;filter:drop-shadow(0 0 8px var(--emerald))}
+#volume{width:155px;accent-color:var(--emerald)}
 
-#game{
-  position:relative;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 75% 22%, rgba(0,255,160,.25), transparent 16%),
-    linear-gradient(to bottom, #0b3142 0%, #0c462e 52%, #16320f 100%);
-}
+#inventory{height:86px;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 26px;border-color:rgba(85,255,184,.75);box-shadow:0 0 24px rgba(0,255,138,.65),inset 0 0 26px rgba(255,255,255,.08)}
+.collect-slot{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(255,255,255,.04);box-shadow:inset 0 0 12px rgba(255,255,255,.15)}
+.collect-slot.filled{border:none;border-radius:0;background:linear-gradient(135deg,#eaffeb 0%,#48ff53 25%,#009925 62%,#005312 100%);clip-path:polygon(12% 35%,30% 10%,70% 10%,88% 35%,50% 100%);filter:drop-shadow(0 0 10px rgba(65,255,65,.9));position:relative}
 
-/* BACKGROUND DECOR */
-#sky-glow{
-  position:absolute;
-  inset:0;
-  background:radial-gradient(circle at 50% 25%, rgba(65,255,175,.18), transparent 34%);
-  animation:pulse 2.5s infinite alternate;
-}
+/* QUESTION PANEL */
+#questionBox{position:absolute;top:135px;left:50%;transform:translateX(-50%);width:min(860px,88vw);min-height:220px;background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(0,60,35,.38));border:3px solid rgba(85,255,184,.95);border-radius:30px;padding:22px 34px;z-index:420;display:none;text-align:center;box-shadow:0 0 36px rgba(0,255,138,.85),inset 0 0 34px rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+#questionNumber{font-size:28px;font-weight:900;color:#48ff95;text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 10px rgba(0,255,138,.8);margin-bottom:10px}
+#questionText{font-size:34px;font-weight:900;line-height:1.15;color:white;text-shadow:0 3px 8px rgba(0,0,0,.45);margin-bottom:20px}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.answer{min-height:72px;border:2px solid rgba(85,255,184,.9);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(0,60,35,.34));color:white;font-size:26px;font-weight:900;cursor:pointer;box-shadow:0 0 12px rgba(0,255,138,.45),inset 0 0 18px rgba(255,255,255,.08);text-shadow:0 2px 6px rgba(0,0,0,.45);transition:.18s}
+.answer:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(0,255,138,.8),inset 0 0 20px rgba(255,255,255,.14)}
+.answer .letter{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#00b94f;color:white;margin-right:10px;font-size:22px;box-shadow:0 0 12px rgba(0,255,138,.7)}
+.input-row{display:flex;gap:18px;align-items:center;justify-content:center;margin-top:8px}
+#textAnswer{width:min(560px,70vw);height:68px;border:2px solid rgba(85,255,184,.9);border-radius:18px;background:rgba(0,35,22,.42);color:white;font-size:28px;font-weight:800;padding:0 24px;outline:none;box-shadow:0 0 14px rgba(0,255,138,.45),inset 0 0 20px rgba(255,255,255,.08)}
+#textAnswer::placeholder{color:rgba(255,255,255,.65)}
+#checkInputBtn{height:68px;border:2px solid rgba(85,255,184,.95);border-radius:18px;background:linear-gradient(135deg,rgba(0,210,92,.82),rgba(0,105,58,.85));color:white;font-size:24px;font-weight:900;padding:0 28px;cursor:pointer;box-shadow:0 0 16px rgba(0,255,138,.65)}
 
-@keyframes pulse{
-  from{opacity:.45;}
-  to{opacity:1;}
-}
+/* PLAY AREA */
+#hero{position:absolute;width:90px;height:110px;z-index:120;transition:.45s ease;transform-origin:center bottom}
+.cat-body{position:absolute;left:15px;top:48px;width:60px;height:42px;background:#bfbfbf;border:4px solid #666;border-radius:50%}
+.cat-head{position:absolute;left:20px;top:18px;width:52px;height:48px;background:#d8d8d8;border:4px solid #666;border-radius:50%}
+.ear{position:absolute;top:-14px;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid #666}.ear.left{left:5px}.ear.right{right:5px}
+.eye{position:absolute;width:7px;height:7px;border-radius:50%;background:#111;top:18px}.eye.left{left:13px}.eye.right{right:13px}
+.tail{position:absolute;left:-6px;top:56px;width:38px;height:14px;border-radius:20px;border:4px solid #666;border-right:none;transform:rotate(-35deg)}
+.hat{position:absolute;left:15px;top:0;width:56px;height:18px;background:#c89d63;border:4px solid #73471f;border-radius:50%}
+.hat:before{content:"";position:absolute;left:12px;top:-20px;width:28px;height:22px;background:#c89d63;border:4px solid #73471f;border-bottom:none;border-radius:10px 10px 0 0}
 
-#emerald-city{
-  position:absolute;
-  right:40px;
-  top:110px;
-  width:210px;
-  height:260px;
-  z-index:1;
-  filter:drop-shadow(0 0 22px rgba(0,255,150,.9));
-}
+.platform{position:absolute;width:92px;height:58px;border-radius:16px;z-index:50;transition:.35s;filter:grayscale(1) brightness(.55);opacity:.7;background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(86,255,225,.82),rgba(0,200,178,.9));border:3px solid rgba(255,255,255,.88);box-shadow:0 0 20px rgba(0,255,210,.45),inset -8px -8px 0 rgba(0,90,90,.14),0 12px 18px rgba(0,0,0,.16)}
+.platform.active{filter:none;opacity:1;box-shadow:0 0 34px rgba(0,255,210,.95),inset -8px -8px 0 rgba(0,90,90,.12),0 12px 18px rgba(0,0,0,.16)}
+.platform.completed{filter:none;opacity:1;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(60,255,180,.9),rgba(0,185,125,.95));box-shadow:0 0 32px rgba(0,255,168,.95),inset -8px -8px 0 rgba(0,90,90,.12),0 12px 18px rgba(0,0,0,.16)}
 
-.tower{
-  position:absolute;
-  bottom:0;
-  width:54px;
-  background:linear-gradient(#23ff9a,#009957);
-  border:4px solid #d7ffe6;
-  border-radius:16px 16px 0 0;
-}
+.emerald{position:absolute;width:58px;height:44px;z-index:80;cursor:pointer;animation:float 1.4s infinite ease-in-out;filter:drop-shadow(0 0 13px rgba(41,255,55,.95))}
+.emerald:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#f0fff0 0%,#49ff3f 22%,#008f18 58%,#003d09 100%);clip-path:polygon(10% 38%,28% 8%,72% 8%,90% 38%,50% 100%);border-radius:4px}
+.emerald:after{content:"";position:absolute;left:17%;top:11%;width:66%;height:28%;background:linear-gradient(90deg,rgba(255,255,255,.8),rgba(255,255,255,.1));clip-path:polygon(0 100%,20% 0,80% 0,100% 100%);opacity:.8}
+.emerald.inactive{opacity:.25;filter:grayscale(1);pointer-events:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-.tower::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:-48px;
-  transform:translateX(-50%);
-  width:0;
-  height:0;
-  border-left:32px solid transparent;
-  border-right:32px solid transparent;
-  border-bottom:52px solid #35ffb2;
-}
+/* START */
+#startScreen{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal{width:min(650px,90vw);background:linear-gradient(135deg,rgba(255,255,255,.28),rgba(0,60,35,.42));border:3px solid rgba(85,255,184,.9);border-radius:30px;padding:34px;text-align:center;box-shadow:0 0 36px rgba(0,255,138,.78),inset 0 0 24px rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.modal h1{font-size:42px;margin-bottom:14px;color:#48ff95;text-shadow:0 0 14px rgba(0,255,138,.8)}
+.modal p{font-size:22px;line-height:1.4;color:white;text-shadow:0 2px 7px rgba(0,0,0,.45)}
+.modal button{margin-top:24px;border:2px solid rgba(85,255,184,.95);border-radius:22px;background:linear-gradient(135deg,rgba(0,210,92,.9),rgba(0,105,58,.95));color:white;font-size:28px;font-weight:900;padding:16px 38px;cursor:pointer;box-shadow:0 0 22px rgba(0,255,138,.65)}
 
-.tower.one{left:10px;height:150px;}
-.tower.two{left:76px;height:225px;}
-.tower.three{left:145px;height:175px;}
+#message{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);z-index:430;display:none;max-width:80vw;padding:14px 24px;border-radius:18px;background:rgba(0,35,22,.62);border:2px solid rgba(85,255,184,.8);box-shadow:0 0 18px rgba(0,255,138,.5);font-size:22px;font-weight:900;color:white;text-align:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 
-#title{
-  position:absolute;
-  top:22px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#fff8c7;
-  font-size:42px;
-  font-weight:900;
-  letter-spacing:1px;
-  text-shadow:0 4px 12px rgba(0,0,0,.35), 0 0 20px rgba(255,225,0,.55);
-  z-index:40;
-}
+.jump{animation:jump .45s ease}@keyframes jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-55px)}}
+.shake{animation:shake .35s ease}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-6px)}}
+.fall{animation:fall 1s forwards}@keyframes fall{to{transform:translateY(650px) rotate(90deg) scale(.5);opacity:0}}
+.particle{position:absolute;width:8px;height:8px;border-radius:50%;background:#49ff57;box-shadow:0 0 12px #49ff57;z-index:600;pointer-events:none;animation:pop .65s forwards}@keyframes pop{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
 
-/* START SCREEN */
-#startScreen{
-  position:absolute;
-  inset:0;
-  z-index:300;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:rgba(0,0,0,.52);
-}
-
-#missionBox{
-  width:min(560px, 90vw);
-  padding:30px;
-  border-radius:28px;
-  background:#fff7d1;
-  border:6px solid #f5c542;
-  text-align:center;
-  box-shadow:0 18px 45px rgba(0,0,0,.35), 0 0 25px rgba(0,255,150,.65);
-}
-
-#missionBox h1{
-  margin:0 0 12px;
-  font-size:42px;
-  color:#095a35;
-}
-
-#missionBox p{
-  margin:0;
-  color:#20422d;
-  font-size:22px;
-  line-height:1.45;
-}
-
-#startBtn{
-  margin-top:24px;
-  padding:17px 38px;
-  border:0;
-  border-radius:22px;
-  background:linear-gradient(#ffe36c,#f7b500);
-  color:#2a1d00;
-  font-size:28px;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:0 8px 0 #ba7d00, 0 12px 22px rgba(0,0,0,.22);
-}
-
-#startBtn:hover{
-  transform:scale(1.04);
-}
-
-/* UI */
-#ui{
-  position:absolute;
-  top:20px;
-  right:20px;
-  display:flex;
-  gap:12px;
-  z-index:80;
-}
-
-.ui-box{
-  min-width:82px;
-  padding:12px 16px;
-  border-radius:18px;
-  background:rgba(255,255,255,.94);
-  color:#12351f;
-  font-size:22px;
-  font-weight:900;
-  box-shadow:0 8px 18px rgba(0,0,0,.18);
-  text-align:center;
-}
-
-/* YELLOW BRICK PLATFORMS */
-.platform{
-  position:absolute;
-  width:142px;
-  height:54px;
-  border-radius:14px;
-  border:5px solid #8a5d00;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.15) 2px, transparent 2px) 0 0 / 35px 100%,
-    linear-gradient(#ffd84d, #e8a900);
-  box-shadow:inset 0 -9px 0 rgba(0,0,0,.14), 0 12px 18px rgba(0,0,0,.25);
-  cursor:pointer;
-  z-index:20;
-  filter:grayscale(1) brightness(.38);
-  opacity:.56;
-  transition:.28s;
-}
-
-.platform.active{
-  filter:none;
-  opacity:1;
-  box-shadow:0 0 22px rgba(255,230,0,.95), inset 0 -9px 0 rgba(0,0,0,.14), 0 12px 18px rgba(0,0,0,.25);
-}
-
-.platform.completed{
-  filter:none;
-  opacity:1;
-}
-
-.platform.locked{
-  pointer-events:none;
-}
-
-.platform:hover{
-  transform:scale(1.05);
-}
-
-/* COLLECTIBLE */
-.collectible{
-  position:absolute;
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #d9ffef, #00e083 48%, #00824d);
-  border:4px solid #caffdf;
-  box-shadow:0 0 18px rgba(0,255,150,.9);
-  cursor:pointer;
-  z-index:50;
-  animation:float 1.6s infinite ease-in-out;
-}
-
-.collectible::after{
-  content:"♦";
-  position:absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
-  font-size:30px;
-  text-shadow:0 2px 5px rgba(0,0,0,.35);
-}
-
-@keyframes float{
-  0%{transform:translateY(0) rotate(0deg);}
-  50%{transform:translateY(-10px) rotate(8deg);}
-  100%{transform:translateY(0) rotate(0deg);}
-}
-
-/* CHARACTER: ELLIE-STYLE GIRL */
-#hero{
-  position:absolute;
-  width:90px;
-  height:120px;
-  z-index:70;
-  transition:.45s ease;
-}
-
-.head{
-  position:absolute;
-  left:22px;
-  top:0;
-  width:48px;
-  height:48px;
-  background:#ffd8b0;
-  border:4px solid #8d5a2b;
-  border-radius:50%;
-}
-
-.hair{
-  position:absolute;
-  left:16px;
-  top:-3px;
-  width:60px;
-  height:38px;
-  background:#8b4a20;
-  border-radius:50% 50% 20% 20%;
-  z-index:-1;
-}
-
-.eye{
-  position:absolute;
-  top:22px;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:#111;
-}
-
-.eye.left{left:13px;}
-.eye.right{right:13px;}
-
-.smile{
-  position:absolute;
-  left:17px;
-  top:31px;
-  width:16px;
-  height:8px;
-  border-bottom:3px solid #a25050;
-  border-radius:50%;
-}
-
-.dress{
-  position:absolute;
-  left:16px;
-  top:48px;
-  width:58px;
-  height:58px;
-  background:#6ecbff;
-  border:4px solid #287baa;
-  clip-path:polygon(25% 0, 75% 0, 100% 100%, 0 100%);
-}
-
-.arm{
-  position:absolute;
-  top:55px;
-  width:16px;
-  height:42px;
-  background:#ffd8b0;
-  border:3px solid #8d5a2b;
-  border-radius:12px;
-}
-
-.arm.left{left:4px; transform:rotate(18deg);}
-.arm.right{right:4px; transform:rotate(-18deg);}
-
-.shoe{
-  position:absolute;
-  top:103px;
-  width:28px;
-  height:14px;
-  background:#ff3d3d;
-  border-radius:12px;
-  border:3px solid #9c1010;
-}
-
-.shoe.left{left:13px;}
-.shoe.right{right:13px;}
-
-/* QUESTION */
-#questionBox{
-  position:absolute;
-  left:50%;
-  top:18%;
-  transform:translateX(-50%);
-  width:min(520px, 90vw);
-  background:#fff7d1;
-  border:5px solid #f5c542;
-  border-radius:26px;
-  padding:24px;
-  z-index:220;
-  display:none;
-  box-shadow:0 15px 40px rgba(0,0,0,.32);
-}
-
-#questionBox h2{
-  margin:0 0 18px;
-  text-align:center;
-  color:#144725;
-}
-
-.answer{
-  display:block;
-  width:100%;
-  margin-top:12px;
-  padding:14px;
-  border:0;
-  border-radius:16px;
-  background:white;
-  color:#153a20;
-  font-size:18px;
-  font-weight:800;
-  cursor:pointer;
-  box-shadow:0 5px 0 #d6b242;
-}
-
-.answer:hover{
-  background:#e9fff1;
-}
-
-#message{
-  position:absolute;
-  left:50%;
-  bottom:32px;
-  transform:translateX(-50%);
-  background:rgba(255,255,255,.95);
-  color:#0c4a29;
-  padding:14px 24px;
-  border-radius:18px;
-  font-size:22px;
-  font-weight:900;
-  z-index:180;
-  box-shadow:0 8px 22px rgba(0,0,0,.22);
-  display:none;
-}
-
-/* ANIMATIONS */
-.jump{
-  animation:jumpAnim .45s ease;
-}
-
-@keyframes jumpAnim{
-  0%{transform:translateY(0);}
-  50%{transform:translateY(-55px);}
-  100%{transform:translateY(0);}
-}
-
-.fall{
-  animation:fallAnim 1.1s forwards;
-}
-
-@keyframes fallAnim{
-  to{
-    transform:translateY(720px) rotate(80deg) scale(.55);
-    opacity:0;
-  }
-}
-
-.flash{
-  animation:flashAnim .5s ease;
-}
-
-@keyframes flashAnim{
-  0%{filter:brightness(1);}
-  50%{filter:brightness(2);}
-  100%{filter:brightness(1);}
-}
-
+@media(max-width:980px){#topUI{grid-template-columns:1fr;gap:12px}#questionBox{top:225px}.answers{grid-template-columns:1fr 1fr}.answer{font-size:22px}.platform{width:76px}.emerald{width:48px}}
 </style>
 </head>
-
 <body>
 <div id="game">
-  <div id="sky-glow"></div>
-
-  <div id="emerald-city">
-    <div class="tower one"></div>
-    <div class="tower two"></div>
-    <div class="tower three"></div>
-  </div>
-
-  <div id="title">EMERALD PATH QUEST</div>
-
-  <div id="ui">
-    <div class="ui-box" id="timerBox">⏰ 75</div>
-    <div class="ui-box" id="scoreBox">♦ 0</div>
-    <div class="ui-box" id="shieldBox">🛡️ 1</div>
-  </div>
-
-  <div id="startScreen">
-    <div id="missionBox">
-      <h1>Emerald Mission</h1>
-      <p>Collect the emeralds to reveal the Yellow Brick Road. Help Ellie reach the Emerald City!</p>
-      <button id="startBtn">START</button>
+  <div id="topUI">
+    <div class="glass-box" id="lives">❤️❤️❤️</div>
+    <div class="glass-box" id="inventory"></div>
+    <div class="glass-box" id="soundBox">
+      <button id="muteBtn">🔊</button>
+      <input type="range" id="volume" min="0" max="100" value="70">
     </div>
-  </div>
-
-  <div id="hero">
-    <div class="hair"></div>
-    <div class="head">
-      <div class="eye left"></div>
-      <div class="eye right"></div>
-      <div class="smile"></div>
-    </div>
-    <div class="arm left"></div>
-    <div class="arm right"></div>
-    <div class="dress"></div>
-    <div class="shoe left"></div>
-    <div class="shoe right"></div>
   </div>
 
   <div id="questionBox">
-    <h2 id="question"></h2>
-    <button class="answer" onclick="checkAnswer(0)"></button>
-    <button class="answer" onclick="checkAnswer(1)"></button>
-    <button class="answer" onclick="checkAnswer(2)"></button>
+    <div id="questionNumber"></div>
+    <h2 id="questionText"></h2>
+    <div id="answerArea"></div>
+  </div>
+
+  <div id="hero">
+    <div class="tail"></div>
+    <div class="cat-body"></div>
+    <div class="cat-head">
+      <div class="ear left"></div>
+      <div class="ear right"></div>
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+    </div>
+    <div class="hat"></div>
+  </div>
+
+  <div id="startScreen">
+    <div class="modal">
+      <h1>Изумрудный мост</h1>
+      <p>Собирай изумруды, прыгай по хрустальным платформам и отвечай на задания правильно!</p>
+      <button id="startBtn">СТАРТ</button>
+    </div>
   </div>
 
   <div id="message"></div>
 </div>
 
 <script>
+const CONFIG = {
+  platformCount: 12,
+  startX: 105,
+  baseY: 555,
+  spacing: 105,
+  wave: 8,
+  arcDepth: 26,
+  lives: 3,
+  volume: 0.7,
+  sound: true,
+  questions: [
+    { type:"quiz", q:"Сколько будет 7 + 5?", a:["10","11","12","13"], c:2 },
+    { type:"quiz", q:"Выбери правильное предложение:", a:["She go","She goes","She going","She gone"], c:1 },
+    { type:"quiz", q:"Past Simple от GO:", a:["goed","went","gone","goes"], c:1 },
+    { type:"quiz", q:"Сколько будет 9 - 4?", a:["3","4","5","6"], c:2 },
+    { type:"quiz", q:"Выбери животное:", a:["table","window","cat","book"], c:2 },
+    { type:"quiz", q:"They ___ happy.", a:["is","are","am","be"], c:1 },
+    { type:"input", q:"Впиши пропущенное слово: She ___ a book every day.", c:["reads"] },
+    { type:"input", q:"Впиши Past Simple: Yesterday I ___ to school. (go)", c:["went"] },
+    { type:"input", q:"Впиши число словом: 12", c:["twelve"] },
+    { type:"input", q:"Впиши пропущенное слово: He ___ football on Sundays.", c:["plays"] },
+    { type:"input", q:"Впиши Past Simple: I ___ a cat. (see)", c:["saw"] },
+    { type:"input", q:"Финал: впиши magic word — emerald", c:["emerald"] }
+  ]
+};
+
 const game = document.getElementById("game");
 const hero = document.getElementById("hero");
-const questionBox = document.getElementById("questionBox");
-const questionText = document.getElementById("question");
-const timerBox = document.getElementById("timerBox");
-const scoreBox = document.getElementById("scoreBox");
-const shieldBox = document.getElementById("shieldBox");
 const startScreen = document.getElementById("startScreen");
+const questionBox = document.getElementById("questionBox");
+const questionNumber = document.getElementById("questionNumber");
+const questionText = document.getElementById("questionText");
+const answerArea = document.getElementById("answerArea");
+const livesBox = document.getElementById("lives");
+const inventory = document.getElementById("inventory");
 const message = document.getElementById("message");
 
-let currentStep = 0;
-let score = 0;
-let shields = 1;
-let timeLeft = 75;
-let timer = null;
+let state;
+let platforms = [];
+let emeralds = [];
 let selectedPlatform = null;
-let gameStarted = false;
+let audioCtx = null;
 
-const questions = [
-  {
-    question:"Choose the correct sentence:",
-    answers:["She go to the city.", "She goes to the city.", "She going to the city."],
-    correct:1
-  },
-  {
-    question:"Past Simple of FIND:",
-    answers:["found", "finded", "founded"],
-    correct:0
-  },
-  {
-    question:"Ellie ___ an emerald.",
-    answers:["collect", "collects", "collecting"],
-    correct:1
-  },
-  {
-    question:"Choose the correct word:",
-    answers:["brave", "bravely", "bravery"],
-    correct:0
-  },
-  {
-    question:"The road is yellow. It is a ___ road.",
-    answers:["yellow brick", "brick yellow", "yellow bricks"],
-    correct:0
-  },
-  {
-    question:"Final challenge: What do we collect?",
-    answers:["emeralds", "bananas", "snowballs"],
-    correct:0
-  }
-];
-
-const platforms = [];
-const collectibles = [];
-const positions = [];
-
-/* WebAudio generated sounds: no external files needed */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-function playTone(freq, duration, type="sine", volume=.08){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  gain.gain.value = volume;
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + duration);
-  osc.stop(audioCtx.currentTime + duration);
+function init(){
+  state = { started:false, step:0, lives:CONFIG.lives, collected:0, gameOver:false };
+  platforms.forEach(el => el.remove());
+  emeralds.forEach(el => el.remove());
+  platforms = [];
+  emeralds = [];
+  createPath();
+  setHeroStart();
+  renderUI();
+  questionBox.style.display = "none";
 }
 
-function soundCollect(){
-  playTone(880,.08,"triangle",.08);
-  setTimeout(()=>playTone(1320,.12,"triangle",.06),70);
-}
-
-function soundReveal(){
-  playTone(520,.12,"sine",.06);
-  setTimeout(()=>playTone(780,.13,"sine",.06),80);
-}
-
-function soundJump(){
-  playTone(360,.08,"square",.035);
-}
-
-function soundFall(){
-  playTone(190,.25,"sawtooth",.08);
-  setTimeout(()=>playTone(90,.35,"sawtooth",.07),120);
-}
-
-function soundFinish(){
-  [520,660,780,1040].forEach((f,i)=>setTimeout(()=>playTone(f,.18,"triangle",.08),i*120));
-}
-
-function soundShield(){
-  playTone(260,.1,"square",.06);
-  setTimeout(()=>playTone(620,.16,"triangle",.07),100);
-}
-
-function buildPath(){
-  const count = questions.length;
-  const startX = 135;
-  const spacing = 170;
-  const baseY = 555;
-  const wave = 24;
-
-  for(let i=0; i<count; i++){
-    const x = startX + i * spacing;
-    const y = baseY + Math.sin(i * .8) * wave;
-    positions.push({x,y});
+function createPath(){
+  for(let i = 0; i < CONFIG.platformCount; i++){
+    const t = i / (CONFIG.platformCount - 1);
+    const x = CONFIG.startX + i * CONFIG.spacing;
+    const y = CONFIG.baseY + Math.sin(Math.PI * t) * CONFIG.arcDepth + Math.sin(i * 0.8) * CONFIG.wave;
 
     const platform = document.createElement("div");
-    platform.className = "platform locked";
+    platform.className = "platform";
     platform.style.left = x + "px";
     platform.style.top = y + "px";
-    platform.onclick = () => clickPlatform(i, platform);
     platforms.push(platform);
     game.appendChild(platform);
 
     const emerald = document.createElement("div");
-    emerald.className = "collectible";
-    emerald.style.left = (x + 44) + "px";
-    emerald.style.top = (y - 78) + "px";
+    emerald.className = "emerald";
+    emerald.style.left = (x + 18) + "px";
+    emerald.style.top = (y - 72) + "px";
     emerald.onclick = () => collectEmerald(i, emerald);
-    collectibles.push(emerald);
+    emeralds.push(emerald);
     game.appendChild(emerald);
   }
 }
 
-function setStartPosition(){
-  hero.classList.remove("fall");
+function setHeroStart(){
+  hero.className = "";
   hero.style.opacity = "1";
   hero.style.transform = "none";
-  hero.style.left = "32px";
-  hero.style.top = "482px";
+  hero.style.left = "28px";
+  hero.style.top = (CONFIG.baseY - 96) + "px";
 }
 
-function startGame(){
-  audioCtx.resume();
-  gameStarted = true;
+document.getElementById("startBtn").onclick = () => {
+  ensureAudio();
+  state.started = true;
   startScreen.style.display = "none";
-  showMessage("Collect the emerald above the first tile!");
-  startTimer();
-}
-
-function startTimer(){
-  timer = setInterval(()=>{
-    if(!gameStarted) return;
-    timeLeft--;
-    timerBox.textContent = "⏰ " + timeLeft;
-    if(timeLeft <= 0){
-      clearInterval(timer);
-      gameStarted = false;
-      showMessage("Time is over! The road disappeared!");
-      soundFall();
-      hero.classList.add("fall");
-    }
-  },1000);
-}
+  showMessage("Кликни на первый изумруд!");
+};
 
 function collectEmerald(index, emerald){
-  if(!gameStarted) return;
-  if(index !== currentStep) return;
+  if(!state.started || state.gameOver) return;
+  if(index !== state.step) return;
 
-  soundCollect();
+  playSound("collect");
+  createParticles(emerald);
   emerald.remove();
-  score++;
-  scoreBox.textContent = "♦ " + score;
 
-  const platform = platforms[index];
-  platform.classList.remove("locked");
-  platform.classList.add("active");
-  platform.classList.add("flash");
+  state.collected++;
+  selectedPlatform = platforms[index];
+  selectedPlatform.classList.add("active");
+  renderUI();
 
-  soundReveal();
-  showMessage("The next tile is revealed! Click it.");
+  setTimeout(() => jumpToPlatform(selectedPlatform), 180);
+  setTimeout(() => showQuestion(index), 740);
 }
 
-function clickPlatform(index, platform){
-  if(!gameStarted) return;
-  if(index !== currentStep) return;
-  if(!platform.classList.contains("active")){
-    showMessage("Collect the emerald first!");
-    return;
-  }
-
-  selectedPlatform = platform;
-  moveHero(platform);
-
-  setTimeout(()=>showQuestion(index),500);
-}
-
-function moveHero(platform){
-  soundJump();
+function jumpToPlatform(platform){
+  playSound("jump");
   hero.classList.remove("jump");
   void hero.offsetWidth;
   hero.classList.add("jump");
-
-  const x = parseInt(platform.style.left);
-  const y = parseInt(platform.style.top);
-  hero.style.left = (x + 26) + "px";
-  hero.style.top = (y - 100) + "px";
+  hero.style.left = (parseInt(platform.style.left) + 5) + "px";
+  hero.style.top = (parseInt(platform.style.top) - 96) + "px";
 }
 
 function showQuestion(index){
-  const q = questions[index];
-  questionText.textContent = q.question;
-  document.querySelectorAll(".answer").forEach((btn,i)=>{
-    btn.textContent = q.answers[i];
-  });
+  const q = CONFIG.questions[index % CONFIG.questions.length];
+  questionNumber.textContent = `ЗАДАНИЕ ${index + 1} / ${CONFIG.platformCount}`;
+  questionText.textContent = q.q;
+  answerArea.innerHTML = "";
+
+  if(q.type === "quiz"){
+    const grid = document.createElement("div");
+    grid.className = "answers";
+    q.a.forEach((answer, answerIndex) => {
+      const btn = document.createElement("button");
+      btn.className = "answer";
+      btn.innerHTML = `<span class="letter">${String.fromCharCode(65 + answerIndex)}</span>${answer}`;
+      btn.onclick = () => checkQuizAnswer(answerIndex);
+      grid.appendChild(btn);
+    });
+    answerArea.appendChild(grid);
+  }
+
+  if(q.type === "input"){
+    const row = document.createElement("div");
+    row.className = "input-row";
+    row.innerHTML = `
+      <input id="textAnswer" type="text" placeholder="Введи ответ..." autocomplete="off">
+      <button id="checkInputBtn">Проверить</button>
+    `;
+    answerArea.appendChild(row);
+    document.getElementById("checkInputBtn").onclick = checkInputAnswer;
+    document.getElementById("textAnswer").addEventListener("keydown", e => {
+      if(e.key === "Enter") checkInputAnswer();
+    });
+    setTimeout(() => document.getElementById("textAnswer").focus(), 80);
+  }
+
   questionBox.style.display = "block";
 }
 
-function checkAnswer(answerIndex){
+function checkQuizAnswer(answerIndex){
+  const q = CONFIG.questions[state.step % CONFIG.questions.length];
+  if(answerIndex === q.c) correctAnswer();
+  else wrongAnswer();
+}
+
+function checkInputAnswer(){
+  const q = CONFIG.questions[state.step % CONFIG.questions.length];
+  const input = document.getElementById("textAnswer");
+  const userAnswer = normalize(input.value);
+  const correctAnswers = q.c.map(normalize);
+  if(correctAnswers.includes(userAnswer)) correctAnswer();
+  else wrongAnswer();
+}
+
+function normalize(str){
+  return String(str).trim().toLowerCase().replace(/[.!?]/g, "");
+}
+
+function correctAnswer(){
+  playSound("correct");
   questionBox.style.display = "none";
-  const q = questions[currentStep];
+  selectedPlatform.classList.remove("active");
+  selectedPlatform.classList.add("completed");
+  state.step++;
 
-  if(answerIndex === q.correct){
-    selectedPlatform.classList.remove("active");
-    selectedPlatform.classList.add("completed");
-
-    currentStep++;
-
-    if(currentStep >= platforms.length){
-      clearInterval(timer);
-      gameStarted = false;
-      soundFinish();
-      showMessage("You reached the Emerald City!");
-      setTimeout(()=>alert("MISSION COMPLETE! You reached the Emerald City!"),500);
-      return;
-    }
-
-    showMessage("Correct! Collect the next emerald.");
+  if(state.step >= CONFIG.platformCount){
+    playSound("finish");
+    showMessage("Миссия выполнена!");
+    setTimeout(() => alert("МИССИЯ ВЫПОЛНЕНА!"), 450);
   } else {
-    if(shields > 0){
-      shields--;
-      shieldBox.textContent = "🛡️ " + shields;
-      soundShield();
-      showMessage("Magic shield saved you! Try again.");
-      setTimeout(()=>showQuestion(currentStep),700);
-    } else {
-      soundFall();
-      showMessage("Wrong answer! The road vanished!");
-      selectedPlatform.classList.remove("active");
-      hero.classList.add("fall");
-      gameStarted = false;
-      clearInterval(timer);
-    }
+    showMessage("Верно! Собери следующий изумруд.");
+  }
+}
+
+function wrongAnswer(){
+  playSound("wrong");
+  state.lives--;
+  renderUI();
+
+  hero.classList.remove("shake");
+  void hero.offsetWidth;
+  hero.classList.add("shake");
+
+  if(state.lives <= 0){
+    questionBox.style.display = "none";
+    gameOver();
+  } else {
+    showMessage(`Неверно! Осталось жизней: ${state.lives}`);
+    setTimeout(() => showQuestion(state.step), 700);
+  }
+}
+
+function gameOver(){
+  state.gameOver = true;
+  playSound("fall");
+  showMessage("Жизни закончились! Начинаем заново...");
+  hero.classList.add("fall");
+  setTimeout(() => {
+    startScreen.style.display = "flex";
+    init();
+  }, 1700);
+}
+
+function renderUI(){
+  livesBox.textContent = "❤️".repeat(Math.max(0, state.lives));
+  inventory.innerHTML = "";
+  for(let i = 0; i < CONFIG.platformCount; i++){
+    const slot = document.createElement("div");
+    slot.className = "collect-slot";
+    if(i < state.collected) slot.classList.add("filled");
+    inventory.appendChild(slot);
   }
 }
 
 function showMessage(text){
   message.textContent = text;
   message.style.display = "block";
-  clearTimeout(message.hideTimer);
-  message.hideTimer = setTimeout(()=>{
-    message.style.display = "none";
-  },2300);
+  clearTimeout(message.timer);
+  message.timer = setTimeout(() => message.style.display = "none", 2200);
 }
 
-document.getElementById("startBtn").onclick = startGame;
+document.getElementById("muteBtn").onclick = () => {
+  CONFIG.sound = !CONFIG.sound;
+  document.getElementById("muteBtn").textContent = CONFIG.sound ? "🔊" : "🔇";
+};
 
-buildPath();
-setStartPosition();
+document.getElementById("volume").oninput = e => CONFIG.volume = e.target.value / 100;
+
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === "suspended") audioCtx.resume();
+}
+
+function tone(freq, duration, type = "sine"){
+  if(!CONFIG.sound || CONFIG.volume <= 0) return;
+  ensureAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = 0.08 * CONFIG.volume;
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function playSound(type){
+  if(type === "collect"){
+    tone(880,.08,"triangle");
+    setTimeout(() => tone(1320,.1,"triangle"),70);
+  }
+  if(type === "jump") tone(360,.08,"square");
+  if(type === "correct"){
+    tone(760,.1,"triangle");
+    setTimeout(() => tone(1040,.1,"triangle"),80);
+  }
+  if(type === "wrong") tone(180,.16,"sawtooth");
+  if(type === "fall"){
+    tone(190,.25,"sawtooth");
+    setTimeout(() => tone(90,.35,"sawtooth"),120);
+  }
+  if(type === "finish"){
+    [520,660,780,1040].forEach((freq,index) => {
+      setTimeout(() => tone(freq,.15,"triangle"), index * 120);
+    });
+  }
+}
+
+function createParticles(element){
+  const rect = element.getBoundingClientRect();
+  const gameRect = game.getBoundingClientRect();
+  const cx = rect.left - gameRect.left + rect.width / 2;
+  const cy = rect.top - gameRect.top + rect.height / 2;
+
+  for(let i = 0; i < 16; i++){
+    const particle = document.createElement("div");
+    particle.className = "particle";
+    particle.style.left = cx + "px";
+    particle.style.top = cy + "px";
+    const angle = Math.PI * 2 * i / 16;
+    const distance = 42 + Math.random() * 30;
+    particle.style.setProperty("--dx", Math.cos(angle) * distance + "px");
+    particle.style.setProperty("--dy", Math.sin(angle) * distance + "px");
+    game.appendChild(particle);
+    setTimeout(() => particle.remove(), 700);
+  }
+}
+
+init();
 </script>
 </body>
 </html>

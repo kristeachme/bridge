@@ -3,56 +3,731 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Step Quest Bridge — Working Test</title>
+<title>Emerald Path Quest</title>
+
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#07101f}
-#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(#89d8ff 0%,#bfefff 48%,#5baed0 49%,#226b8f 100%)}
-.cloud{position:absolute;background:white;border-radius:999px;opacity:.86;filter:drop-shadow(0 3px 2px rgba(0,0,0,.08))}.cloud:before,.cloud:after{content:"";position:absolute;background:white;border-radius:50%}.cloud:before{width:55px;height:55px;left:28px;top:-25px}.cloud:after{width:72px;height:72px;left:72px;top:-38px}.c1{width:170px;height:48px;left:55px;top:70px}.c2{width:210px;height:55px;right:120px;top:90px}.c3{width:145px;height:40px;left:48%;top:130px}.cliff{position:absolute;bottom:0;width:205px;height:260px;background:linear-gradient(90deg,#69513f,#a17655,#604636);border:5px solid rgba(0,0,0,.18);z-index:10}.cliff.left{left:0;border-radius:0 36px 0 0}.cliff.right{right:0;border-radius:36px 0 0 0}.grass{position:absolute;top:-34px;width:100%;height:62px;background:#69b560;border-radius:40% 40% 18px 18px;border-bottom:5px solid #447d3c}
-#bridgeLayer{position:absolute;inset:0;z-index:25;pointer-events:none}.rope{position:absolute;height:8px;border-radius:20px;background:linear-gradient(90deg,#6a4324,#b77a3c,#6a4324);transform-origin:left center;box-shadow:0 4px 5px rgba(0,0,0,.25)}.post{position:absolute;width:36px;height:135px;border-radius:18px 18px 10px 10px;background:linear-gradient(90deg,#74451f,#c98c46,#74451f);border:4px solid #553116;box-shadow:0 8px 12px rgba(0,0,0,.25)}.sign{position:absolute;width:94px;height:58px;border-radius:12px;background:linear-gradient(#d9ad6f,#a56e38);border:4px solid #663d20;color:#4b2c18;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;box-shadow:0 6px 10px rgba(0,0,0,.24)}.sign:after{content:"";position:absolute;bottom:-34px;left:42px;width:10px;height:34px;background:#663d20;border-radius:8px}
-.platform{position:absolute;width:82px;height:58px;border-radius:14px;z-index:45;cursor:pointer;transition:.28s;filter:grayscale(1) brightness(.48);opacity:.58;background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(139,240,255,.8) 45%,rgba(84,205,230,.82));border:4px solid rgba(255,255,255,.75);box-shadow:inset -8px -8px 0 rgba(0,75,100,.18),0 8px 12px rgba(0,0,0,.25)}.platform.active{filter:none;opacity:1;box-shadow:0 0 22px rgba(66,255,220,.95),inset -8px -8px 0 rgba(0,75,100,.12),0 8px 12px rgba(0,0,0,.25)}.platform.completed{filter:none;opacity:1;background:linear-gradient(135deg,rgba(255,255,255,.85),rgba(49,255,202,.85) 45%,rgba(9,194,148,.9));box-shadow:0 0 18px rgba(66,255,220,.75),inset -8px -8px 0 rgba(0,75,100,.12),0 8px 12px rgba(0,0,0,.25)}.num{position:absolute;left:50%;bottom:-34px;transform:translateX(-50%);min-width:32px;height:30px;padding:0 8px;border-radius:8px;background:#624126;color:white;font-size:19px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 6px rgba(0,0,0,.24)}
-.crystal{position:absolute;width:46px;height:58px;z-index:80;cursor:pointer;animation:float 1.45s infinite ease-in-out;filter:drop-shadow(0 0 13px rgba(41,255,152,.95))}.crystal:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#e8fff3,#23ee82 45%,#008241);clip-path:polygon(50% 0,88% 24%,74% 80%,50% 100%,26% 80%,12% 24%);border-radius:6px}.crystal.inactive{opacity:.28;filter:grayscale(1);pointer-events:none}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-#hero{position:absolute;width:86px;height:104px;z-index:100;transition:.45s ease;transform-origin:center bottom}.cat-body{position:absolute;left:12px;top:42px;width:62px;height:45px;background:#a8a8a8;border:4px solid #666;border-radius:50%}.cat-head{position:absolute;left:18px;top:16px;width:54px;height:50px;background:#c9c9c9;border:4px solid #666;border-radius:50%}.ear{position:absolute;top:-14px;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:24px solid #666}.ear.l{left:5px}.ear.r{right:5px}.eye{position:absolute;top:19px;width:7px;height:7px;background:#111;border-radius:50%}.eye.l{left:14px}.eye.r{right:14px}.tail{position:absolute;left:-7px;top:55px;width:38px;height:14px;border-radius:20px;border:4px solid #666;border-right:0;transform:rotate(-35deg)}.hat{position:absolute;left:16px;top:0;width:58px;height:18px;background:#c59b5d;border:4px solid #6e4b24;border-radius:50%}.hat:before{content:"";position:absolute;left:12px;top:-20px;width:31px;height:23px;background:#c59b5d;border:4px solid #6e4b24;border-bottom:0;border-radius:10px 10px 0 0}
-#ui{position:absolute;top:18px;left:20px;right:20px;z-index:300;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.uiGroup{display:flex;gap:12px;align-items:center;pointer-events:auto}.box{min-height:54px;padding:12px 18px;border-radius:18px;background:rgba(255,255,255,.92);font-size:24px;font-weight:900;color:#3b2d20;box-shadow:0 8px 18px rgba(0,0,0,.18);display:flex;align-items:center;gap:8px}.collected span{display:inline-flex;width:26px;height:26px;margin-left:4px;border-radius:50%;border:3px solid #c7bba8;background:#f6f0e6}.collected span.filled{border:0;background:linear-gradient(135deg,#e8fff3,#23ee82,#008241);clip-path:polygon(50% 0,88% 24%,74% 80%,50% 100%,26% 80%,12% 24%);border-radius:4px}#muteBtn{border:0;background:transparent;font-size:24px;cursor:pointer}#volume{width:110px}
-#startScreen{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center}.modal{width:min(610px,90vw);background:#fff8e8;border:5px solid #e1b95d;border-radius:28px;padding:30px;text-align:center;box-shadow:0 18px 45px rgba(0,0,0,.35)}.modal h1{margin:0 0 12px;font-size:42px}.modal p{font-size:22px;line-height:1.4;margin:0}.modal button{margin-top:24px;border:0;border-radius:20px;background:#22b36b;color:white;padding:16px 38px;font-size:28px;font-weight:900;cursor:pointer;box-shadow:0 8px 0 #137443}
-#questionBox{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);width:min(760px,88vw);background:#fff8e8;border:5px solid #e1b95d;border-radius:28px;padding:22px;z-index:420;display:none;box-shadow:0 14px 38px rgba(0,0,0,.28)}#questionText{text-align:center;margin:0 0 18px;font-size:34px;color:#403122}.answers{display:flex;gap:18px}.answer{flex:1;border:3px solid #d2c4aa;background:white;border-radius:18px;padding:18px;font-size:30px;font-weight:900;color:#403122;cursor:pointer}.answer:hover{background:#eafff6;border-color:#22b36b}
-#message{position:absolute;left:50%;bottom:270px;transform:translateX(-50%);z-index:450;display:none;max-width:80vw;background:rgba(255,255,255,.94);border-radius:18px;padding:14px 24px;font-size:22px;font-weight:900;color:#2f493b;box-shadow:0 8px 22px rgba(0,0,0,.22)}.jump{animation:jump .45s ease}@keyframes jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-60px)}}.shake{animation:shake .35s ease}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-6px)}}.fall{animation:fall 1.1s forwards}@keyframes fall{to{transform:translateY(680px) rotate(90deg) scale(.5);opacity:0}}.particle{position:absolute;width:8px;height:8px;border-radius:50%;background:#49ffbd;box-shadow:0 0 12px #49ffbd;z-index:600;pointer-events:none;animation:pop .65s forwards}@keyframes pop{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:Arial, sans-serif;
+  background:#071b12;
+}
+
+#game{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 75% 22%, rgba(0,255,160,.25), transparent 16%),
+    linear-gradient(to bottom, #0b3142 0%, #0c462e 52%, #16320f 100%);
+}
+
+/* BACKGROUND DECOR */
+#sky-glow{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 25%, rgba(65,255,175,.18), transparent 34%);
+  animation:pulse 2.5s infinite alternate;
+}
+
+@keyframes pulse{
+  from{opacity:.45;}
+  to{opacity:1;}
+}
+
+#emerald-city{
+  position:absolute;
+  right:40px;
+  top:110px;
+  width:210px;
+  height:260px;
+  z-index:1;
+  filter:drop-shadow(0 0 22px rgba(0,255,150,.9));
+}
+
+.tower{
+  position:absolute;
+  bottom:0;
+  width:54px;
+  background:linear-gradient(#23ff9a,#009957);
+  border:4px solid #d7ffe6;
+  border-radius:16px 16px 0 0;
+}
+
+.tower::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-48px;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:32px solid transparent;
+  border-right:32px solid transparent;
+  border-bottom:52px solid #35ffb2;
+}
+
+.tower.one{left:10px;height:150px;}
+.tower.two{left:76px;height:225px;}
+.tower.three{left:145px;height:175px;}
+
+#title{
+  position:absolute;
+  top:22px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#fff8c7;
+  font-size:42px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-shadow:0 4px 12px rgba(0,0,0,.35), 0 0 20px rgba(255,225,0,.55);
+  z-index:40;
+}
+
+/* START SCREEN */
+#startScreen{
+  position:absolute;
+  inset:0;
+  z-index:300;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.52);
+}
+
+#missionBox{
+  width:min(560px, 90vw);
+  padding:30px;
+  border-radius:28px;
+  background:#fff7d1;
+  border:6px solid #f5c542;
+  text-align:center;
+  box-shadow:0 18px 45px rgba(0,0,0,.35), 0 0 25px rgba(0,255,150,.65);
+}
+
+#missionBox h1{
+  margin:0 0 12px;
+  font-size:42px;
+  color:#095a35;
+}
+
+#missionBox p{
+  margin:0;
+  color:#20422d;
+  font-size:22px;
+  line-height:1.45;
+}
+
+#startBtn{
+  margin-top:24px;
+  padding:17px 38px;
+  border:0;
+  border-radius:22px;
+  background:linear-gradient(#ffe36c,#f7b500);
+  color:#2a1d00;
+  font-size:28px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 8px 0 #ba7d00, 0 12px 22px rgba(0,0,0,.22);
+}
+
+#startBtn:hover{
+  transform:scale(1.04);
+}
+
+/* UI */
+#ui{
+  position:absolute;
+  top:20px;
+  right:20px;
+  display:flex;
+  gap:12px;
+  z-index:80;
+}
+
+.ui-box{
+  min-width:82px;
+  padding:12px 16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.94);
+  color:#12351f;
+  font-size:22px;
+  font-weight:900;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+  text-align:center;
+}
+
+/* YELLOW BRICK PLATFORMS */
+.platform{
+  position:absolute;
+  width:142px;
+  height:54px;
+  border-radius:14px;
+  border:5px solid #8a5d00;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.15) 2px, transparent 2px) 0 0 / 35px 100%,
+    linear-gradient(#ffd84d, #e8a900);
+  box-shadow:inset 0 -9px 0 rgba(0,0,0,.14), 0 12px 18px rgba(0,0,0,.25);
+  cursor:pointer;
+  z-index:20;
+  filter:grayscale(1) brightness(.38);
+  opacity:.56;
+  transition:.28s;
+}
+
+.platform.active{
+  filter:none;
+  opacity:1;
+  box-shadow:0 0 22px rgba(255,230,0,.95), inset 0 -9px 0 rgba(0,0,0,.14), 0 12px 18px rgba(0,0,0,.25);
+}
+
+.platform.completed{
+  filter:none;
+  opacity:1;
+}
+
+.platform.locked{
+  pointer-events:none;
+}
+
+.platform:hover{
+  transform:scale(1.05);
+}
+
+/* COLLECTIBLE */
+.collectible{
+  position:absolute;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #d9ffef, #00e083 48%, #00824d);
+  border:4px solid #caffdf;
+  box-shadow:0 0 18px rgba(0,255,150,.9);
+  cursor:pointer;
+  z-index:50;
+  animation:float 1.6s infinite ease-in-out;
+}
+
+.collectible::after{
+  content:"♦";
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:30px;
+  text-shadow:0 2px 5px rgba(0,0,0,.35);
+}
+
+@keyframes float{
+  0%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(-10px) rotate(8deg);}
+  100%{transform:translateY(0) rotate(0deg);}
+}
+
+/* CHARACTER: ELLIE-STYLE GIRL */
+#hero{
+  position:absolute;
+  width:90px;
+  height:120px;
+  z-index:70;
+  transition:.45s ease;
+}
+
+.head{
+  position:absolute;
+  left:22px;
+  top:0;
+  width:48px;
+  height:48px;
+  background:#ffd8b0;
+  border:4px solid #8d5a2b;
+  border-radius:50%;
+}
+
+.hair{
+  position:absolute;
+  left:16px;
+  top:-3px;
+  width:60px;
+  height:38px;
+  background:#8b4a20;
+  border-radius:50% 50% 20% 20%;
+  z-index:-1;
+}
+
+.eye{
+  position:absolute;
+  top:22px;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#111;
+}
+
+.eye.left{left:13px;}
+.eye.right{right:13px;}
+
+.smile{
+  position:absolute;
+  left:17px;
+  top:31px;
+  width:16px;
+  height:8px;
+  border-bottom:3px solid #a25050;
+  border-radius:50%;
+}
+
+.dress{
+  position:absolute;
+  left:16px;
+  top:48px;
+  width:58px;
+  height:58px;
+  background:#6ecbff;
+  border:4px solid #287baa;
+  clip-path:polygon(25% 0, 75% 0, 100% 100%, 0 100%);
+}
+
+.arm{
+  position:absolute;
+  top:55px;
+  width:16px;
+  height:42px;
+  background:#ffd8b0;
+  border:3px solid #8d5a2b;
+  border-radius:12px;
+}
+
+.arm.left{left:4px; transform:rotate(18deg);}
+.arm.right{right:4px; transform:rotate(-18deg);}
+
+.shoe{
+  position:absolute;
+  top:103px;
+  width:28px;
+  height:14px;
+  background:#ff3d3d;
+  border-radius:12px;
+  border:3px solid #9c1010;
+}
+
+.shoe.left{left:13px;}
+.shoe.right{right:13px;}
+
+/* QUESTION */
+#questionBox{
+  position:absolute;
+  left:50%;
+  top:18%;
+  transform:translateX(-50%);
+  width:min(520px, 90vw);
+  background:#fff7d1;
+  border:5px solid #f5c542;
+  border-radius:26px;
+  padding:24px;
+  z-index:220;
+  display:none;
+  box-shadow:0 15px 40px rgba(0,0,0,.32);
+}
+
+#questionBox h2{
+  margin:0 0 18px;
+  text-align:center;
+  color:#144725;
+}
+
+.answer{
+  display:block;
+  width:100%;
+  margin-top:12px;
+  padding:14px;
+  border:0;
+  border-radius:16px;
+  background:white;
+  color:#153a20;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 5px 0 #d6b242;
+}
+
+.answer:hover{
+  background:#e9fff1;
+}
+
+#message{
+  position:absolute;
+  left:50%;
+  bottom:32px;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,.95);
+  color:#0c4a29;
+  padding:14px 24px;
+  border-radius:18px;
+  font-size:22px;
+  font-weight:900;
+  z-index:180;
+  box-shadow:0 8px 22px rgba(0,0,0,.22);
+  display:none;
+}
+
+/* ANIMATIONS */
+.jump{
+  animation:jumpAnim .45s ease;
+}
+
+@keyframes jumpAnim{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-55px);}
+  100%{transform:translateY(0);}
+}
+
+.fall{
+  animation:fallAnim 1.1s forwards;
+}
+
+@keyframes fallAnim{
+  to{
+    transform:translateY(720px) rotate(80deg) scale(.55);
+    opacity:0;
+  }
+}
+
+.flash{
+  animation:flashAnim .5s ease;
+}
+
+@keyframes flashAnim{
+  0%{filter:brightness(1);}
+  50%{filter:brightness(2);}
+  100%{filter:brightness(1);}
+}
+
 </style>
 </head>
+
 <body>
 <div id="game">
-  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
-  <div class="cliff left"><div class="grass"></div></div><div class="cliff right"><div class="grass"></div></div>
-  <div id="bridgeLayer"></div>
-  <div id="ui"><div class="uiGroup"><div class="box" id="lives">❤️❤️❤️</div><div class="box" id="score">Score: 0 ⭐</div><div class="box collected" id="collected">Collected:</div></div><div class="uiGroup"><div class="box"><button id="muteBtn">🔊</button><input id="volume" type="range" min="0" max="100" value="70"></div></div></div>
-  <div id="hero"><div class="tail"></div><div class="cat-body"></div><div class="cat-head"><div class="ear l"></div><div class="ear r"></div><div class="eye l"></div><div class="eye r"></div></div><div class="hat"></div></div>
-  <div id="startScreen"><div class="modal"><h1>Crystal Bridge Quest</h1><p>Click the crystals. The hero will jump across 12 crystal platforms. Answer questions and reach point B!</p><button id="startBtn">START</button></div></div>
-  <div id="questionBox"><h2 id="questionText"></h2><div class="answers" id="answers"></div></div>
+  <div id="sky-glow"></div>
+
+  <div id="emerald-city">
+    <div class="tower one"></div>
+    <div class="tower two"></div>
+    <div class="tower three"></div>
+  </div>
+
+  <div id="title">EMERALD PATH QUEST</div>
+
+  <div id="ui">
+    <div class="ui-box" id="timerBox">⏰ 75</div>
+    <div class="ui-box" id="scoreBox">♦ 0</div>
+    <div class="ui-box" id="shieldBox">🛡️ 1</div>
+  </div>
+
+  <div id="startScreen">
+    <div id="missionBox">
+      <h1>Emerald Mission</h1>
+      <p>Collect the emeralds to reveal the Yellow Brick Road. Help Ellie reach the Emerald City!</p>
+      <button id="startBtn">START</button>
+    </div>
+  </div>
+
+  <div id="hero">
+    <div class="hair"></div>
+    <div class="head">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="smile"></div>
+    </div>
+    <div class="arm left"></div>
+    <div class="arm right"></div>
+    <div class="dress"></div>
+    <div class="shoe left"></div>
+    <div class="shoe right"></div>
+  </div>
+
+  <div id="questionBox">
+    <h2 id="question"></h2>
+    <button class="answer" onclick="checkAnswer(0)"></button>
+    <button class="answer" onclick="checkAnswer(1)"></button>
+    <button class="answer" onclick="checkAnswer(2)"></button>
+  </div>
+
   <div id="message"></div>
 </div>
+
 <script>
-const CONFIG={platformCount:12,startX:178,baseY:465,spacing:82,arcDepth:55,wave:8,lives:3,pointsCollect:10,pointsCorrect:20,volume:.7,sound:true,questions:[
-{q:'7 + 5 = ?',a:['10','12','13'],c:1},{q:'Choose the correct sentence:',a:['She go','She goes','She going'],c:1},{q:'Past of GO:',a:['goed','went','gone'],c:1},{q:'2 + 2 = ?',a:['3','4','5'],c:1},{q:'I ___ a book.',a:['read','reads','reading'],c:0},{q:'Choose the animal:',a:['table','cat','window'],c:1},{q:'5 + 3 = ?',a:['6','8','9'],c:1},{q:'He ___ football.',a:['play','plays','playing'],c:1},{q:'Past of SEE:',a:['saw','seed','seen'],c:0},{q:'10 - 4 = ?',a:['5','6','7'],c:1},{q:'They ___ happy.',a:['is','are','am'],c:1},{q:'Final: choose magic word',a:['Emerald','Potato','Chair'],c:0}]};
-const game=document.getElementById('game'), bridgeLayer=document.getElementById('bridgeLayer'), hero=document.getElementById('hero'), startScreen=document.getElementById('startScreen'), questionBox=document.getElementById('questionBox'), questionText=document.getElementById('questionText'), answers=document.getElementById('answers'), livesBox=document.getElementById('lives'), scoreBox=document.getElementById('score'), collectedBox=document.getElementById('collected'), message=document.getElementById('message');
-let state, platforms=[], crystals=[], positions=[], selected=null, audioCtx=null;
-function init(){state={started:false,step:0,lives:CONFIG.lives,score:0,collected:0,gameOver:false}; build(); render();}
-function build(){platforms.forEach(e=>e.remove());crystals.forEach(e=>e.remove());bridgeLayer.innerHTML='';platforms=[];crystals=[];positions=[];for(let i=0;i<CONFIG.platformCount;i++){let t=i/(CONFIG.platformCount-1),x=CONFIG.startX+i*CONFIG.spacing,y=CONFIG.baseY+Math.sin(Math.PI*t)*CONFIG.arcDepth+Math.sin(i*.8)*CONFIG.wave;positions.push({x,y});}
-buildBridge(); positions.forEach((p,i)=>{let pl=document.createElement('div');pl.className='platform';pl.style.left=p.x+'px';pl.style.top=p.y+'px';pl.innerHTML='<div class="num">'+(i+1)+'</div>';platforms.push(pl);game.appendChild(pl);let cr=document.createElement('div');cr.className='crystal';cr.style.left=(p.x+18)+'px';cr.style.top=(p.y-72)+'px';cr.onclick=()=>collect(i,cr);crystals.push(cr);game.appendChild(cr);}); setHeroStart();}
-function buildBridge(){let first=positions[0],last=positions.at(-1),startX=first.x-80,endX=last.x+120,startY=first.y-35,endY=last.y-35;post(startX-28,first.y-88);post(startX+18,first.y-78);post(endX-24,last.y-82);post(endX+22,last.y-92);sign(startX-120,first.y-108,'A');sign(endX+20,last.y-112,'B');rope(startX,startY+16,endX,endY+16);rope(startX,startY+86,endX,endY+86);positions.forEach(p=>rope(p.x+41,p.y-30,p.x+41,p.y+83));}
-function rope(x1,y1,x2,y2){let r=document.createElement('div');r.className='rope';let dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;r.style.left=x1+'px';r.style.top=y1+'px';r.style.width=len+'px';r.style.transform=`rotate(${ang}deg)`;bridgeLayer.appendChild(r);}function post(x,y){let e=document.createElement('div');e.className='post';e.style.left=x+'px';e.style.top=y+'px';bridgeLayer.appendChild(e)}function sign(x,y,t){let e=document.createElement('div');e.className='sign';e.style.left=x+'px';e.style.top=y+'px';e.textContent=t;bridgeLayer.appendChild(e)}
-function setHeroStart(){hero.className='';hero.style.opacity=1;hero.style.transform='none';hero.style.left='70px';hero.style.top=(CONFIG.baseY-100)+'px'}
-document.getElementById('startBtn').onclick=()=>{state.started=true;startScreen.style.display='none';show('Click the first crystal!')};
-function collect(i,cr){if(!state.started||state.gameOver||i!==state.step)return; sound('collect'); particles(cr); cr.remove(); state.collected++; state.score+=CONFIG.pointsCollect; selected=platforms[i]; selected.classList.add('active'); render(); setTimeout(()=>jumpTo(selected),180); setTimeout(()=>showQuestion(i),720);}
-function jumpTo(pl){sound('jump');hero.classList.remove('jump');void hero.offsetWidth;hero.classList.add('jump');hero.style.left=(parseInt(pl.style.left)+6)+'px';hero.style.top=(parseInt(pl.style.top)-96)+'px'}
-function showQuestion(i){let q=CONFIG.questions[i%CONFIG.questions.length];questionText.textContent=q.q;answers.innerHTML='';q.a.forEach((a,idx)=>{let b=document.createElement('button');b.className='answer';b.textContent=a;b.onclick=()=>check(idx);answers.appendChild(b)});questionBox.style.display='block'}
-function check(idx){let q=CONFIG.questions[state.step%CONFIG.questions.length];if(idx===q.c){sound('correct');questionBox.style.display='none';selected.classList.remove('active');selected.classList.add('completed');state.score+=CONFIG.pointsCorrect;state.step++;render();if(state.step>=CONFIG.platformCount){sound('finish');show('Mission complete!');setTimeout(()=>alert('MISSION COMPLETE!'),500)}else show('Correct! Click the next crystal.')}else{sound('wrong');state.lives--;render();hero.classList.remove('shake');void hero.offsetWidth;hero.classList.add('shake');if(state.lives<=0){questionBox.style.display='none';gameOver()}else{show('Wrong! Try again. Lives left: '+state.lives);setTimeout(()=>showQuestion(state.step),700)}}}
-function gameOver(){state.gameOver=true;sound('fall');show('No lives left! Restarting...');hero.classList.add('fall');setTimeout(()=>{startScreen.style.display='flex';init()},1800)}
-function render(){livesBox.textContent='❤️'.repeat(Math.max(0,state.lives));scoreBox.textContent='Score: '+state.score+' ⭐';collectedBox.innerHTML='Collected:';for(let i=0;i<CONFIG.platformCount;i++){let s=document.createElement('span');if(i<state.collected)s.classList.add('filled');collectedBox.appendChild(s)}}
-function show(t){message.textContent=t;message.style.display='block';clearTimeout(message.timer);message.timer=setTimeout(()=>message.style.display='none',2100)}
-document.getElementById('muteBtn').onclick=()=>{CONFIG.sound=!CONFIG.sound;document.getElementById('muteBtn').textContent=CONFIG.sound?'🔊':'🔇'};document.getElementById('volume').oninput=e=>CONFIG.volume=e.target.value/100;
-function ensureAudio(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}function tone(f,d,type='sine'){if(!CONFIG.sound||CONFIG.volume<=0)return;ensureAudio();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=f;g.gain.value=.08*CONFIG.volume;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d)}function sound(t){if(t==='collect'){tone(880,.08,'triangle');setTimeout(()=>tone(1320,.1,'triangle'),70)}else if(t==='jump')tone(360,.08,'square');else if(t==='correct'){tone(760,.1,'triangle');setTimeout(()=>tone(1040,.1,'triangle'),80)}else if(t==='wrong')tone(180,.16,'sawtooth');else if(t==='fall'){tone(190,.25,'sawtooth');setTimeout(()=>tone(90,.35,'sawtooth'),120)}else if(t==='finish'){[520,660,780,1040].forEach((f,i)=>setTimeout(()=>tone(f,.15,'triangle'),i*120))}}
-function particles(el){let r=el.getBoundingClientRect(),gr=game.getBoundingClientRect(),cx=r.left-gr.left+r.width/2,cy=r.top-gr.top+r.height/2;for(let i=0;i<14;i++){let p=document.createElement('div');p.className='particle';p.style.left=cx+'px';p.style.top=cy+'px';let a=Math.PI*2*i/14,d=38+Math.random()*26;p.style.setProperty('--dx',Math.cos(a)*d+'px');p.style.setProperty('--dy',Math.sin(a)*d+'px');game.appendChild(p);setTimeout(()=>p.remove(),700)}}
-init();
+const game = document.getElementById("game");
+const hero = document.getElementById("hero");
+const questionBox = document.getElementById("questionBox");
+const questionText = document.getElementById("question");
+const timerBox = document.getElementById("timerBox");
+const scoreBox = document.getElementById("scoreBox");
+const shieldBox = document.getElementById("shieldBox");
+const startScreen = document.getElementById("startScreen");
+const message = document.getElementById("message");
+
+let currentStep = 0;
+let score = 0;
+let shields = 1;
+let timeLeft = 75;
+let timer = null;
+let selectedPlatform = null;
+let gameStarted = false;
+
+const questions = [
+  {
+    question:"Choose the correct sentence:",
+    answers:["She go to the city.", "She goes to the city.", "She going to the city."],
+    correct:1
+  },
+  {
+    question:"Past Simple of FIND:",
+    answers:["found", "finded", "founded"],
+    correct:0
+  },
+  {
+    question:"Ellie ___ an emerald.",
+    answers:["collect", "collects", "collecting"],
+    correct:1
+  },
+  {
+    question:"Choose the correct word:",
+    answers:["brave", "bravely", "bravery"],
+    correct:0
+  },
+  {
+    question:"The road is yellow. It is a ___ road.",
+    answers:["yellow brick", "brick yellow", "yellow bricks"],
+    correct:0
+  },
+  {
+    question:"Final challenge: What do we collect?",
+    answers:["emeralds", "bananas", "snowballs"],
+    correct:0
+  }
+];
+
+const platforms = [];
+const collectibles = [];
+const positions = [];
+
+/* WebAudio generated sounds: no external files needed */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, duration, type="sine", volume=.08){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = volume;
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + duration);
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function soundCollect(){
+  playTone(880,.08,"triangle",.08);
+  setTimeout(()=>playTone(1320,.12,"triangle",.06),70);
+}
+
+function soundReveal(){
+  playTone(520,.12,"sine",.06);
+  setTimeout(()=>playTone(780,.13,"sine",.06),80);
+}
+
+function soundJump(){
+  playTone(360,.08,"square",.035);
+}
+
+function soundFall(){
+  playTone(190,.25,"sawtooth",.08);
+  setTimeout(()=>playTone(90,.35,"sawtooth",.07),120);
+}
+
+function soundFinish(){
+  [520,660,780,1040].forEach((f,i)=>setTimeout(()=>playTone(f,.18,"triangle",.08),i*120));
+}
+
+function soundShield(){
+  playTone(260,.1,"square",.06);
+  setTimeout(()=>playTone(620,.16,"triangle",.07),100);
+}
+
+function buildPath(){
+  const count = questions.length;
+  const startX = 135;
+  const spacing = 170;
+  const baseY = 555;
+  const wave = 24;
+
+  for(let i=0; i<count; i++){
+    const x = startX + i * spacing;
+    const y = baseY + Math.sin(i * .8) * wave;
+    positions.push({x,y});
+
+    const platform = document.createElement("div");
+    platform.className = "platform locked";
+    platform.style.left = x + "px";
+    platform.style.top = y + "px";
+    platform.onclick = () => clickPlatform(i, platform);
+    platforms.push(platform);
+    game.appendChild(platform);
+
+    const emerald = document.createElement("div");
+    emerald.className = "collectible";
+    emerald.style.left = (x + 44) + "px";
+    emerald.style.top = (y - 78) + "px";
+    emerald.onclick = () => collectEmerald(i, emerald);
+    collectibles.push(emerald);
+    game.appendChild(emerald);
+  }
+}
+
+function setStartPosition(){
+  hero.classList.remove("fall");
+  hero.style.opacity = "1";
+  hero.style.transform = "none";
+  hero.style.left = "32px";
+  hero.style.top = "482px";
+}
+
+function startGame(){
+  audioCtx.resume();
+  gameStarted = true;
+  startScreen.style.display = "none";
+  showMessage("Collect the emerald above the first tile!");
+  startTimer();
+}
+
+function startTimer(){
+  timer = setInterval(()=>{
+    if(!gameStarted) return;
+    timeLeft--;
+    timerBox.textContent = "⏰ " + timeLeft;
+    if(timeLeft <= 0){
+      clearInterval(timer);
+      gameStarted = false;
+      showMessage("Time is over! The road disappeared!");
+      soundFall();
+      hero.classList.add("fall");
+    }
+  },1000);
+}
+
+function collectEmerald(index, emerald){
+  if(!gameStarted) return;
+  if(index !== currentStep) return;
+
+  soundCollect();
+  emerald.remove();
+  score++;
+  scoreBox.textContent = "♦ " + score;
+
+  const platform = platforms[index];
+  platform.classList.remove("locked");
+  platform.classList.add("active");
+  platform.classList.add("flash");
+
+  soundReveal();
+  showMessage("The next tile is revealed! Click it.");
+}
+
+function clickPlatform(index, platform){
+  if(!gameStarted) return;
+  if(index !== currentStep) return;
+  if(!platform.classList.contains("active")){
+    showMessage("Collect the emerald first!");
+    return;
+  }
+
+  selectedPlatform = platform;
+  moveHero(platform);
+
+  setTimeout(()=>showQuestion(index),500);
+}
+
+function moveHero(platform){
+  soundJump();
+  hero.classList.remove("jump");
+  void hero.offsetWidth;
+  hero.classList.add("jump");
+
+  const x = parseInt(platform.style.left);
+  const y = parseInt(platform.style.top);
+  hero.style.left = (x + 26) + "px";
+  hero.style.top = (y - 100) + "px";
+}
+
+function showQuestion(index){
+  const q = questions[index];
+  questionText.textContent = q.question;
+  document.querySelectorAll(".answer").forEach((btn,i)=>{
+    btn.textContent = q.answers[i];
+  });
+  questionBox.style.display = "block";
+}
+
+function checkAnswer(answerIndex){
+  questionBox.style.display = "none";
+  const q = questions[currentStep];
+
+  if(answerIndex === q.correct){
+    selectedPlatform.classList.remove("active");
+    selectedPlatform.classList.add("completed");
+
+    currentStep++;
+
+    if(currentStep >= platforms.length){
+      clearInterval(timer);
+      gameStarted = false;
+      soundFinish();
+      showMessage("You reached the Emerald City!");
+      setTimeout(()=>alert("MISSION COMPLETE! You reached the Emerald City!"),500);
+      return;
+    }
+
+    showMessage("Correct! Collect the next emerald.");
+  } else {
+    if(shields > 0){
+      shields--;
+      shieldBox.textContent = "🛡️ " + shields;
+      soundShield();
+      showMessage("Magic shield saved you! Try again.");
+      setTimeout(()=>showQuestion(currentStep),700);
+    } else {
+      soundFall();
+      showMessage("Wrong answer! The road vanished!");
+      selectedPlatform.classList.remove("active");
+      hero.classList.add("fall");
+      gameStarted = false;
+      clearInterval(timer);
+    }
+  }
+}
+
+function showMessage(text){
+  message.textContent = text;
+  message.style.display = "block";
+  clearTimeout(message.hideTimer);
+  message.hideTimer = setTimeout(()=>{
+    message.style.display = "none";
+  },2300);
+}
+
+document.getElementById("startBtn").onclick = startGame;
+
+buildPath();
+setStartPosition();
 </script>
 </body>
 </html>

@@ -3,145 +3,449 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Step Quest Emerald Bridge</title>
+<title>Bridge Quest</title>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,sans-serif}
-#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:transparent;color:white}
 
-:root{
-  --emerald:#00ff8a;
-  --emerald2:#55ffb8;
-  --glass:rgba(10,35,25,.48);
-  --glass2:rgba(255,255,255,.11);
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:transparent;
+  font-family:Arial,sans-serif;
 }
 
-/* TOP UI */
-#topUI{position:absolute;top:24px;left:38px;right:38px;z-index:300;display:grid;grid-template-columns:260px 1fr 300px;gap:32px;align-items:start;pointer-events:none}
-.glass-box{background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.06));border:2px solid rgba(255,255,255,.62);border-radius:24px;box-shadow:0 0 22px rgba(0,255,138,.22),inset 0 0 26px rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:auto}
-#lives{height:76px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:42px;text-shadow:0 3px 8px rgba(0,0,0,.35)}
-#soundBox{height:76px;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 18px}
-#muteBtn{border:none;background:transparent;font-size:30px;cursor:pointer;color:white;filter:drop-shadow(0 0 8px var(--emerald))}
-#volume{width:155px;accent-color:var(--emerald)}
+#game{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:transparent;
+}
 
-#inventory{height:86px;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 26px;border-color:rgba(85,255,184,.75);box-shadow:0 0 24px rgba(0,255,138,.65),inset 0 0 26px rgba(255,255,255,.08)}
-.collect-slot{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(255,255,255,.04);box-shadow:inset 0 0 12px rgba(255,255,255,.15)}
-.collect-slot.filled{border:none;border-radius:0;background:linear-gradient(135deg,#eaffeb 0%,#48ff53 25%,#009925 62%,#005312 100%);clip-path:polygon(12% 35%,30% 10%,70% 10%,88% 35%,50% 100%);filter:drop-shadow(0 0 10px rgba(65,255,65,.9));position:relative}
+/* UI */
 
-/* QUESTION PANEL */
-#questionBox{position:absolute;top:135px;left:50%;transform:translateX(-50%);width:min(860px,88vw);min-height:220px;background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(0,60,35,.38));border:3px solid rgba(85,255,184,.95);border-radius:30px;padding:22px 34px;z-index:420;display:none;text-align:center;box-shadow:0 0 36px rgba(0,255,138,.85),inset 0 0 34px rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-#questionNumber{font-size:28px;font-weight:900;color:#48ff95;text-transform:uppercase;letter-spacing:1px;text-shadow:0 0 10px rgba(0,255,138,.8);margin-bottom:10px}
-#questionText{font-size:34px;font-weight:900;line-height:1.15;color:white;text-shadow:0 3px 8px rgba(0,0,0,.45);margin-bottom:20px}
-.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.answer{min-height:72px;border:2px solid rgba(85,255,184,.9);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(0,60,35,.34));color:white;font-size:26px;font-weight:900;cursor:pointer;box-shadow:0 0 12px rgba(0,255,138,.45),inset 0 0 18px rgba(255,255,255,.08);text-shadow:0 2px 6px rgba(0,0,0,.45);transition:.18s}
-.answer:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(0,255,138,.8),inset 0 0 20px rgba(255,255,255,.14)}
-.answer .letter{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#00b94f;color:white;margin-right:10px;font-size:22px;box-shadow:0 0 12px rgba(0,255,138,.7)}
-.input-row{display:flex;gap:18px;align-items:center;justify-content:center;margin-top:8px}
-#textAnswer{width:min(560px,70vw);height:68px;border:2px solid rgba(85,255,184,.9);border-radius:18px;background:rgba(0,35,22,.42);color:white;font-size:28px;font-weight:800;padding:0 24px;outline:none;box-shadow:0 0 14px rgba(0,255,138,.45),inset 0 0 20px rgba(255,255,255,.08)}
-#textAnswer::placeholder{color:rgba(255,255,255,.65)}
-#checkInputBtn{height:68px;border:2px solid rgba(85,255,184,.95);border-radius:18px;background:linear-gradient(135deg,rgba(0,210,92,.82),rgba(0,105,58,.85));color:white;font-size:24px;font-weight:900;padding:0 28px;cursor:pointer;box-shadow:0 0 16px rgba(0,255,138,.65)}
+#topUI{
+  position:absolute;
+  top:24px;
+  left:38px;
+  right:38px;
+  z-index:300;
+  display:grid;
+  grid-template-columns:260px 1fr 300px;
+  gap:32px;
+  align-items:start;
+  pointer-events:none;
+}
 
-/* PLAY AREA */
-#hero{position:absolute;width:90px;height:110px;z-index:120;transition:.45s ease;transform-origin:center bottom}
-.cat-body{position:absolute;left:15px;top:48px;width:60px;height:42px;background:#bfbfbf;border:4px solid #666;border-radius:50%}
-.cat-head{position:absolute;left:20px;top:18px;width:52px;height:48px;background:#d8d8d8;border:4px solid #666;border-radius:50%}
-.ear{position:absolute;top:-14px;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid #666}.ear.left{left:5px}.ear.right{right:5px}
-.eye{position:absolute;width:7px;height:7px;border-radius:50%;background:#111;top:18px}.eye.left{left:13px}.eye.right{right:13px}
-.tail{position:absolute;left:-6px;top:56px;width:38px;height:14px;border-radius:20px;border:4px solid #666;border-right:none;transform:rotate(-35deg)}
-.hat{position:absolute;left:15px;top:0;width:56px;height:18px;background:#c89d63;border:4px solid #73471f;border-radius:50%}
-.hat:before{content:"";position:absolute;left:12px;top:-20px;width:28px;height:22px;background:#c89d63;border:4px solid #73471f;border-bottom:none;border-radius:10px 10px 0 0}
+.ui-panel{
+  min-height:78px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:10px 20px;
+  border-radius:24px;
+  background:rgba(255,255,255,.12);
+  border:2px solid rgba(180,255,255,.55);
+  box-shadow:0 0 22px rgba(70,220,255,.45);
+  backdrop-filter:blur(12px);
+  pointer-events:auto;
+}
 
-.platform{position:absolute;width:92px;height:58px;border-radius:16px;z-index:50;transition:.35s;filter:grayscale(1) brightness(.55);opacity:.7;background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(86,255,225,.82),rgba(0,200,178,.9));border:3px solid rgba(255,255,255,.88);box-shadow:0 0 20px rgba(0,255,210,.45),inset -8px -8px 0 rgba(0,90,90,.14),0 12px 18px rgba(0,0,0,.16)}
-.platform.active{filter:none;opacity:1;box-shadow:0 0 34px rgba(0,255,210,.95),inset -8px -8px 0 rgba(0,90,90,.12),0 12px 18px rgba(0,0,0,.16)}
-.platform.completed{filter:none;opacity:1;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(60,255,180,.9),rgba(0,185,125,.95));box-shadow:0 0 32px rgba(0,255,168,.95),inset -8px -8px 0 rgba(0,90,90,.12),0 12px 18px rgba(0,0,0,.16)}
+.heart{
+  width:58px;
+  height:58px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 8px rgba(255,40,80,.75));
+}
 
-.emerald{position:absolute;width:58px;height:44px;z-index:80;cursor:pointer;animation:float 1.4s infinite ease-in-out;filter:drop-shadow(0 0 13px rgba(41,255,55,.95))}
-.emerald:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#f0fff0 0%,#49ff3f 22%,#008f18 58%,#003d09 100%);clip-path:polygon(10% 38%,28% 8%,72% 8%,90% 38%,50% 100%);border-radius:4px}
-.emerald:after{content:"";position:absolute;left:17%;top:11%;width:66%;height:28%;background:linear-gradient(90deg,rgba(255,255,255,.8),rgba(255,255,255,.1));clip-path:polygon(0 100%,20% 0,80% 0,100% 100%);opacity:.8}
-.emerald.inactive{opacity:.25;filter:grayscale(1);pointer-events:none}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+#inventory{
+  gap:18px;
+}
+
+.collect-slot{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.9);
+  opacity:.75;
+}
+
+.collect-slot.filled{
+  border:none;
+  background:url("https://github.com/kristeachme/bridge/blob/main/%D0%BB%D0%B5%D0%B4.png?raw=true") center/contain no-repeat;
+  filter:drop-shadow(0 0 12px #7ffcff);
+  opacity:1;
+}
+
+#muteBtn{
+  border:none;
+  background:transparent;
+  font-size:32px;
+  cursor:pointer;
+}
+
+#volume{
+  width:150px;
+  accent-color:#75f7ff;
+}
+
+/* HERO */
+
+#hero{
+  position:absolute;
+  width:120px;
+  height:auto;
+  z-index:120;
+  transition:.45s ease;
+  transform-origin:center bottom;
+  filter:drop-shadow(0 10px 12px rgba(0,0,0,.28));
+}
+
+/* PLATFORMS */
+
+.platform{
+  position:absolute;
+  width:110px;
+  height:78px;
+  z-index:50;
+  transition:.35s;
+  filter:grayscale(1) brightness(.55);
+  opacity:.72;
+}
+
+.platform img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+.platform.active,
+.platform.completed{
+  filter:none;
+  opacity:1;
+}
+
+.platform.wobble{
+  animation:wobble .45s ease;
+}
+
+@keyframes wobble{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  25%{transform:translateY(4px) rotate(-2deg)}
+  50%{transform:translateY(-3px) rotate(2deg)}
+  75%{transform:translateY(2px) rotate(-1deg)}
+}
+
+/* COLLECTIBLE */
+
+.collectible{
+  position:absolute;
+  width:62px;
+  height:62px;
+  z-index:90;
+  cursor:pointer;
+  animation:float 1.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 14px #7ffcff);
+}
+
+.collectible img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+/* QUESTION */
+
+#questionBox{
+  position:absolute;
+  top:150px;
+  left:50%;
+  transform:translateX(-50%);
+  width:820px;
+  min-height:280px;
+  z-index:420;
+  display:none;
+}
+
+#questionPanelImg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  z-index:1;
+  pointer-events:none;
+  filter:drop-shadow(0 0 24px rgba(90,240,255,.7));
+}
+
+#questionContent{
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:100%;
+  padding:52px 62px 38px;
+  text-align:center;
+  color:white;
+}
+
+#questionText{
+  font-size:38px;
+  font-weight:900;
+  margin-bottom:26px;
+  text-shadow:0 3px 8px rgba(0,0,0,.55);
+}
+
+.answers{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.answer{
+  min-height:70px;
+  border:2px solid rgba(140,255,255,.9);
+  border-radius:18px;
+  background:rgba(0,80,100,.35);
+  color:white;
+  font-size:28px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 14px rgba(90,240,255,.55);
+  backdrop-filter:blur(10px);
+}
+
+.answer:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 22px rgba(90,240,255,.95);
+}
+
+.input-row{
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  align-items:center;
+}
+
+#textAnswer{
+  width:500px;
+  height:66px;
+  border:2px solid rgba(140,255,255,.9);
+  border-radius:18px;
+  background:rgba(0,80,100,.35);
+  color:white;
+  font-size:28px;
+  font-weight:800;
+  padding:0 22px;
+  outline:none;
+}
+
+#textAnswer::placeholder{
+  color:rgba(255,255,255,.65);
+}
+
+#checkInputBtn{
+  height:66px;
+  border:none;
+  border-radius:18px;
+  padding:0 28px;
+  background:#35d4e8;
+  color:white;
+  font-size:24px;
+  font-weight:900;
+  cursor:pointer;
+}
 
 /* START */
-#startScreen{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center}
-.modal{width:min(650px,90vw);background:linear-gradient(135deg,rgba(255,255,255,.28),rgba(0,60,35,.42));border:3px solid rgba(85,255,184,.9);border-radius:30px;padding:34px;text-align:center;box-shadow:0 0 36px rgba(0,255,138,.78),inset 0 0 24px rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.modal h1{font-size:42px;margin-bottom:14px;color:#48ff95;text-shadow:0 0 14px rgba(0,255,138,.8)}
-.modal p{font-size:22px;line-height:1.4;color:white;text-shadow:0 2px 7px rgba(0,0,0,.45)}
-.modal button{margin-top:24px;border:2px solid rgba(85,255,184,.95);border-radius:22px;background:linear-gradient(135deg,rgba(0,210,92,.9),rgba(0,105,58,.95));color:white;font-size:28px;font-weight:900;padding:16px 38px;cursor:pointer;box-shadow:0 0 22px rgba(0,255,138,.65)}
 
-#message{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);z-index:430;display:none;max-width:80vw;padding:14px 24px;border-radius:18px;background:rgba(0,35,22,.62);border:2px solid rgba(85,255,184,.8);box-shadow:0 0 18px rgba(0,255,138,.5);font-size:22px;font-weight:900;color:white;text-align:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#startScreen{
+  position:absolute;
+  inset:0;
+  z-index:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.35);
+}
 
-.jump{animation:jump .45s ease}@keyframes jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-55px)}}
-.shake{animation:shake .35s ease}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-6px)}}
-.fall{animation:fall 1s forwards}@keyframes fall{to{transform:translateY(650px) rotate(90deg) scale(.5);opacity:0}}
-.particle{position:absolute;width:8px;height:8px;border-radius:50%;background:#49ff57;box-shadow:0 0 12px #49ff57;z-index:600;pointer-events:none;animation:pop .65s forwards}@keyframes pop{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+.modal{
+  width:620px;
+  padding:34px;
+  border-radius:28px;
+  text-align:center;
+  color:white;
+  background:rgba(0,90,110,.35);
+  border:2px solid rgba(160,255,255,.9);
+  box-shadow:0 0 30px rgba(90,240,255,.8);
+  backdrop-filter:blur(14px);
+}
 
-@media(max-width:980px){#topUI{grid-template-columns:1fr;gap:12px}#questionBox{top:225px}.answers{grid-template-columns:1fr 1fr}.answer{font-size:22px}.platform{width:76px}.emerald{width:48px}}
+.modal h1{
+  font-size:42px;
+  margin-bottom:14px;
+}
+
+.modal p{
+  font-size:22px;
+  line-height:1.4;
+}
+
+.modal button{
+  margin-top:24px;
+  border:none;
+  border-radius:22px;
+  background:#35d4e8;
+  color:white;
+  font-size:28px;
+  font-weight:900;
+  padding:16px 42px;
+  cursor:pointer;
+}
+
+/* EFFECTS */
+
+.jump{animation:jump .45s ease}
+
+@keyframes jump{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-60px)}
+}
+
+.shake{animation:shake .35s ease}
+
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  50%{transform:translateX(8px)}
+  75%{transform:translateX(-6px)}
+}
+
+.fall{animation:fall 1s forwards}
+
+@keyframes fall{
+  to{
+    transform:translateY(650px) rotate(80deg) scale(.55);
+    opacity:0;
+  }
+}
+
+.particle{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#7ffcff;
+  box-shadow:0 0 12px #7ffcff;
+  z-index:600;
+  pointer-events:none;
+  animation:pop .65s forwards;
+}
+
+@keyframes pop{
+  to{
+    transform:translate(var(--dx),var(--dy)) scale(0);
+    opacity:0;
+  }
+}
+
+#message{
+  position:absolute;
+  left:50%;
+  bottom:34px;
+  transform:translateX(-50%);
+  z-index:430;
+  display:none;
+  color:white;
+  font-size:24px;
+  font-weight:900;
+  padding:14px 24px;
+  border-radius:18px;
+  background:rgba(0,80,100,.4);
+  border:2px solid rgba(140,255,255,.9);
+  box-shadow:0 0 18px rgba(90,240,255,.65);
+  backdrop-filter:blur(10px);
+}
 </style>
 </head>
+
 <body>
+
 <div id="game">
+
   <div id="topUI">
-    <div class="glass-box" id="lives">❤️❤️❤️</div>
-    <div class="glass-box" id="inventory"></div>
-    <div class="glass-box" id="soundBox">
+    <div class="ui-panel" id="lives"></div>
+    <div class="ui-panel" id="inventory"></div>
+    <div class="ui-panel">
       <button id="muteBtn">🔊</button>
       <input type="range" id="volume" min="0" max="100" value="70">
     </div>
   </div>
 
-  <div id="questionBox">
-    <div id="questionNumber"></div>
-    <h2 id="questionText"></h2>
-    <div id="answerArea"></div>
-  </div>
+  <img id="hero" src="https://github.com/kristeachme/bridge/blob/main/3.png?raw=true">
 
-  <div id="hero">
-    <div class="tail"></div>
-    <div class="cat-body"></div>
-    <div class="cat-head">
-      <div class="ear left"></div>
-      <div class="ear right"></div>
-      <div class="eye left"></div>
-      <div class="eye right"></div>
+  <div id="questionBox">
+    <img id="questionPanelImg" src="https://github.com/kristeachme/bridge/blob/main/%D0%BE%D0%BA%D0%BD%D0%BE.png?raw=true">
+    <div id="questionContent">
+      <h2 id="questionText"></h2>
+      <div id="answerArea"></div>
     </div>
-    <div class="hat"></div>
   </div>
 
   <div id="startScreen">
     <div class="modal">
-      <h1>Изумрудный мост</h1>
-      <p>Собирай изумруды, прыгай по хрустальным платформам и отвечай на задания правильно!</p>
+      <h1>Ледяной мост</h1>
+      <p>Собирай льдинки, прыгай по платформам и решай задания!</p>
       <button id="startBtn">СТАРТ</button>
     </div>
   </div>
 
   <div id="message"></div>
+
 </div>
 
 <script>
+const ASSETS = {
+  hero: "https://github.com/kristeachme/bridge/blob/main/3.png?raw=true",
+  collectible: "https://github.com/kristeachme/bridge/blob/main/%D0%BB%D0%B5%D0%B4.png?raw=true",
+  questionPanel: "https://github.com/kristeachme/bridge/blob/main/%D0%BE%D0%BA%D0%BD%D0%BE.png?raw=true",
+  platform: "https://github.com/kristeachme/bridge/blob/main/1.png?raw=true",
+  heart: "https://github.com/kristeachme/bridge/blob/main/4.png?raw=true"
+};
+
 const CONFIG = {
   platformCount: 12,
   startX: 105,
   baseY: 555,
   spacing: 105,
   wave: 8,
-  arcDepth: 26,
+  arcDepth: 24,
   lives: 3,
   volume: 0.7,
   sound: true,
+
   questions: [
-    { type:"quiz", q:"Сколько будет 7 + 5?", a:["10","11","12","13"], c:2 },
-    { type:"quiz", q:"Выбери правильное предложение:", a:["She go","She goes","She going","She gone"], c:1 },
-    { type:"quiz", q:"Past Simple от GO:", a:["goed","went","gone","goes"], c:1 },
-    { type:"quiz", q:"Сколько будет 9 - 4?", a:["3","4","5","6"], c:2 },
-    { type:"quiz", q:"Выбери животное:", a:["table","window","cat","book"], c:2 },
-    { type:"quiz", q:"They ___ happy.", a:["is","are","am","be"], c:1 },
-    { type:"input", q:"Впиши пропущенное слово: She ___ a book every day.", c:["reads"] },
-    { type:"input", q:"Впиши Past Simple: Yesterday I ___ to school. (go)", c:["went"] },
-    { type:"input", q:"Впиши число словом: 12", c:["twelve"] },
-    { type:"input", q:"Впиши пропущенное слово: He ___ football on Sundays.", c:["plays"] },
-    { type:"input", q:"Впиши Past Simple: I ___ a cat. (see)", c:["saw"] },
-    { type:"input", q:"Финал: впиши magic word — emerald", c:["emerald"] }
+    {type:"quiz", q:"Сколько будет 2 + 3?", a:["4","5","6","7"], c:1},
+    {type:"quiz", q:"Сколько будет 4 + 4?", a:["6","7","8","9"], c:2},
+    {type:"quiz", q:"Сколько будет 6 + 2?", a:["7","8","9","10"], c:1},
+    {type:"quiz", q:"Сколько будет 5 + 5?", a:["8","9","10","11"], c:2},
+    {type:"quiz", q:"Сколько будет 7 + 3?", a:["9","10","11","12"], c:1},
+    {type:"quiz", q:"Сколько будет 8 + 4?", a:["10","11","12","13"], c:2},
+
+    {type:"input", q:"Впиши ответ: 3 + 4 = ?", c:["7","семь"]},
+    {type:"input", q:"Впиши ответ: 5 + 6 = ?", c:["11","одиннадцать"]},
+    {type:"input", q:"Впиши ответ: 7 + 7 = ?", c:["14","четырнадцать"]},
+    {type:"input", q:"Впиши ответ: 9 + 3 = ?", c:["12","двенадцать"]},
+    {type:"input", q:"Впиши ответ: 10 + 5 = ?", c:["15","пятнадцать"]},
+    {type:"input", q:"Впиши ответ: 8 + 8 = ?", c:["16","шестнадцать"]}
   ]
 };
 
@@ -149,7 +453,6 @@ const game = document.getElementById("game");
 const hero = document.getElementById("hero");
 const startScreen = document.getElementById("startScreen");
 const questionBox = document.getElementById("questionBox");
-const questionNumber = document.getElementById("questionNumber");
 const questionText = document.getElementById("questionText");
 const answerArea = document.getElementById("answerArea");
 const livesBox = document.getElementById("lives");
@@ -158,19 +461,29 @@ const message = document.getElementById("message");
 
 let state;
 let platforms = [];
-let emeralds = [];
+let collectibles = [];
 let selectedPlatform = null;
 let audioCtx = null;
 
 function init(){
-  state = { started:false, step:0, lives:CONFIG.lives, collected:0, gameOver:false };
+  state = {
+    started:false,
+    step:0,
+    lives:CONFIG.lives,
+    collected:0,
+    gameOver:false
+  };
+
   platforms.forEach(el => el.remove());
-  emeralds.forEach(el => el.remove());
+  collectibles.forEach(el => el.remove());
+
   platforms = [];
-  emeralds = [];
+  collectibles = [];
+
   createPath();
   setHeroStart();
   renderUI();
+
   questionBox.style.display = "none";
 }
 
@@ -178,22 +491,26 @@ function createPath(){
   for(let i = 0; i < CONFIG.platformCount; i++){
     const t = i / (CONFIG.platformCount - 1);
     const x = CONFIG.startX + i * CONFIG.spacing;
-    const y = CONFIG.baseY + Math.sin(Math.PI * t) * CONFIG.arcDepth + Math.sin(i * 0.8) * CONFIG.wave;
+    const y = CONFIG.baseY + Math.sin(Math.PI * t) * CONFIG.arcDepth + Math.sin(i * .8) * CONFIG.wave;
 
     const platform = document.createElement("div");
     platform.className = "platform";
     platform.style.left = x + "px";
     platform.style.top = y + "px";
+    platform.innerHTML = `<img src="${ASSETS.platform}">`;
+
     platforms.push(platform);
     game.appendChild(platform);
 
-    const emerald = document.createElement("div");
-    emerald.className = "emerald";
-    emerald.style.left = (x + 18) + "px";
-    emerald.style.top = (y - 72) + "px";
-    emerald.onclick = () => collectEmerald(i, emerald);
-    emeralds.push(emerald);
-    game.appendChild(emerald);
+    const collectible = document.createElement("div");
+    collectible.className = "collectible";
+    collectible.style.left = (x + 24) + "px";
+    collectible.style.top = (y - 70) + "px";
+    collectible.innerHTML = `<img src="${ASSETS.collectible}">`;
+    collectible.onclick = () => collectItem(i, collectible);
+
+    collectibles.push(collectible);
+    game.appendChild(collectible);
   }
 }
 
@@ -201,28 +518,29 @@ function setHeroStart(){
   hero.className = "";
   hero.style.opacity = "1";
   hero.style.transform = "none";
-  hero.style.left = "28px";
-  hero.style.top = (CONFIG.baseY - 96) + "px";
+  hero.style.left = "25px";
+  hero.style.top = (CONFIG.baseY - 118) + "px";
 }
 
 document.getElementById("startBtn").onclick = () => {
   ensureAudio();
   state.started = true;
   startScreen.style.display = "none";
-  showMessage("Кликни на первый изумруд!");
+  showMessage("Кликни на первую льдинку!");
 };
 
-function collectEmerald(index, emerald){
+function collectItem(index, item){
   if(!state.started || state.gameOver) return;
   if(index !== state.step) return;
 
   playSound("collect");
-  createParticles(emerald);
-  emerald.remove();
+  createParticles(item);
+  item.remove();
 
   state.collected++;
   selectedPlatform = platforms[index];
   selectedPlatform.classList.add("active");
+
   renderUI();
 
   setTimeout(() => jumpToPlatform(selectedPlatform), 180);
@@ -231,29 +549,37 @@ function collectEmerald(index, emerald){
 
 function jumpToPlatform(platform){
   playSound("jump");
+
   hero.classList.remove("jump");
   void hero.offsetWidth;
   hero.classList.add("jump");
-  hero.style.left = (parseInt(platform.style.left) + 5) + "px";
-  hero.style.top = (parseInt(platform.style.top) - 96) + "px";
+
+  platform.classList.remove("wobble");
+  void platform.offsetWidth;
+  platform.classList.add("wobble");
+
+  hero.style.left = (parseInt(platform.style.left) + 4) + "px";
+  hero.style.top = (parseInt(platform.style.top) - 115) + "px";
 }
 
 function showQuestion(index){
   const q = CONFIG.questions[index % CONFIG.questions.length];
-  questionNumber.textContent = `ЗАДАНИЕ ${index + 1} / ${CONFIG.platformCount}`;
+
   questionText.textContent = q.q;
   answerArea.innerHTML = "";
 
   if(q.type === "quiz"){
     const grid = document.createElement("div");
     grid.className = "answers";
-    q.a.forEach((answer, answerIndex) => {
+
+    q.a.forEach((answer,index) => {
       const btn = document.createElement("button");
       btn.className = "answer";
-      btn.innerHTML = `<span class="letter">${String.fromCharCode(65 + answerIndex)}</span>${answer}`;
-      btn.onclick = () => checkQuizAnswer(answerIndex);
+      btn.textContent = answer;
+      btn.onclick = () => checkQuizAnswer(index);
       grid.appendChild(btn);
     });
+
     answerArea.appendChild(grid);
   }
 
@@ -264,11 +590,14 @@ function showQuestion(index){
       <input id="textAnswer" type="text" placeholder="Введи ответ..." autocomplete="off">
       <button id="checkInputBtn">Проверить</button>
     `;
+
     answerArea.appendChild(row);
+
     document.getElementById("checkInputBtn").onclick = checkInputAnswer;
     document.getElementById("textAnswer").addEventListener("keydown", e => {
       if(e.key === "Enter") checkInputAnswer();
     });
+
     setTimeout(() => document.getElementById("textAnswer").focus(), 80);
   }
 
@@ -277,8 +606,12 @@ function showQuestion(index){
 
 function checkQuizAnswer(answerIndex){
   const q = CONFIG.questions[state.step % CONFIG.questions.length];
-  if(answerIndex === q.c) correctAnswer();
-  else wrongAnswer();
+
+  if(answerIndex === q.c){
+    correctAnswer();
+  } else {
+    wrongAnswer();
+  }
 }
 
 function checkInputAnswer(){
@@ -286,19 +619,26 @@ function checkInputAnswer(){
   const input = document.getElementById("textAnswer");
   const userAnswer = normalize(input.value);
   const correctAnswers = q.c.map(normalize);
-  if(correctAnswers.includes(userAnswer)) correctAnswer();
-  else wrongAnswer();
+
+  if(correctAnswers.includes(userAnswer)){
+    correctAnswer();
+  } else {
+    wrongAnswer();
+  }
 }
 
 function normalize(str){
-  return String(str).trim().toLowerCase().replace(/[.!?]/g, "");
+  return String(str).trim().toLowerCase().replace(/[.!?]/g,"");
 }
 
 function correctAnswer(){
   playSound("correct");
+
   questionBox.style.display = "none";
+
   selectedPlatform.classList.remove("active");
   selectedPlatform.classList.add("completed");
+
   state.step++;
 
   if(state.step >= CONFIG.platformCount){
@@ -306,12 +646,13 @@ function correctAnswer(){
     showMessage("Миссия выполнена!");
     setTimeout(() => alert("МИССИЯ ВЫПОЛНЕНА!"), 450);
   } else {
-    showMessage("Верно! Собери следующий изумруд.");
+    showMessage("Верно! Собери следующий предмет.");
   }
 }
 
 function wrongAnswer(){
   playSound("wrong");
+
   state.lives--;
   renderUI();
 
@@ -330,9 +671,12 @@ function wrongAnswer(){
 
 function gameOver(){
   state.gameOver = true;
+
   playSound("fall");
   showMessage("Жизни закончились! Начинаем заново...");
+
   hero.classList.add("fall");
+
   setTimeout(() => {
     startScreen.style.display = "flex";
     init();
@@ -340,12 +684,22 @@ function gameOver(){
 }
 
 function renderUI(){
-  livesBox.textContent = "❤️".repeat(Math.max(0, state.lives));
+  livesBox.innerHTML = "";
+
+  for(let i = 0; i < state.lives; i++){
+    livesBox.innerHTML += `<img class="heart" src="${ASSETS.heart}">`;
+  }
+
   inventory.innerHTML = "";
+
   for(let i = 0; i < CONFIG.platformCount; i++){
     const slot = document.createElement("div");
     slot.className = "collect-slot";
-    if(i < state.collected) slot.classList.add("filled");
+
+    if(i < state.collected){
+      slot.classList.add("filled");
+    }
+
     inventory.appendChild(slot);
   }
 }
@@ -353,8 +707,12 @@ function renderUI(){
 function showMessage(text){
   message.textContent = text;
   message.style.display = "block";
+
   clearTimeout(message.timer);
-  message.timer = setTimeout(() => message.style.display = "none", 2200);
+
+  message.timer = setTimeout(() => {
+    message.style.display = "none";
+  }, 2200);
 }
 
 document.getElementById("muteBtn").onclick = () => {
@@ -362,25 +720,42 @@ document.getElementById("muteBtn").onclick = () => {
   document.getElementById("muteBtn").textContent = CONFIG.sound ? "🔊" : "🔇";
 };
 
-document.getElementById("volume").oninput = e => CONFIG.volume = e.target.value / 100;
+document.getElementById("volume").oninput = e => {
+  CONFIG.volume = e.target.value / 100;
+};
 
 function ensureAudio(){
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === "suspended") audioCtx.resume();
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();
+  }
 }
 
-function tone(freq, duration, type = "sine"){
+function tone(freq,duration,type="sine"){
   if(!CONFIG.sound || CONFIG.volume <= 0) return;
+
   ensureAudio();
+
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
+
   osc.type = type;
   osc.frequency.value = freq;
-  gain.gain.value = 0.08 * CONFIG.volume;
+  gain.gain.value = .08 * CONFIG.volume;
+
   osc.connect(gain);
   gain.connect(audioCtx.destination);
+
   osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+  gain.gain.exponentialRampToValueAtTime(
+    .001,
+    audioCtx.currentTime + duration
+  );
+
   osc.stop(audioCtx.currentTime + duration);
 }
 
@@ -389,16 +764,25 @@ function playSound(type){
     tone(880,.08,"triangle");
     setTimeout(() => tone(1320,.1,"triangle"),70);
   }
-  if(type === "jump") tone(360,.08,"square");
+
+  if(type === "jump"){
+    tone(360,.08,"square");
+  }
+
   if(type === "correct"){
     tone(760,.1,"triangle");
     setTimeout(() => tone(1040,.1,"triangle"),80);
   }
-  if(type === "wrong") tone(180,.16,"sawtooth");
+
+  if(type === "wrong"){
+    tone(180,.16,"sawtooth");
+  }
+
   if(type === "fall"){
     tone(190,.25,"sawtooth");
     setTimeout(() => tone(90,.35,"sawtooth"),120);
   }
+
   if(type === "finish"){
     [520,660,780,1040].forEach((freq,index) => {
       setTimeout(() => tone(freq,.15,"triangle"), index * 120);
@@ -409,24 +793,31 @@ function playSound(type){
 function createParticles(element){
   const rect = element.getBoundingClientRect();
   const gameRect = game.getBoundingClientRect();
+
   const cx = rect.left - gameRect.left + rect.width / 2;
   const cy = rect.top - gameRect.top + rect.height / 2;
 
   for(let i = 0; i < 16; i++){
     const particle = document.createElement("div");
     particle.className = "particle";
+
     particle.style.left = cx + "px";
     particle.style.top = cy + "px";
+
     const angle = Math.PI * 2 * i / 16;
     const distance = 42 + Math.random() * 30;
+
     particle.style.setProperty("--dx", Math.cos(angle) * distance + "px");
     particle.style.setProperty("--dy", Math.sin(angle) * distance + "px");
+
     game.appendChild(particle);
+
     setTimeout(() => particle.remove(), 700);
   }
 }
 
 init();
 </script>
+
 </body>
 </html>

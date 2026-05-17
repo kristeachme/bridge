@@ -11,17 +11,22 @@
 html,body{
   width:100%;
   height:100%;
+  margin:0;
+  padding:0;
   overflow:hidden;
   background:transparent;
   font-family:Arial,sans-serif;
 }
 
 #game{
-  position:relative;
-  width:100vw;
-  height:100vh;
+  position:absolute;
+  left:0;
+  top:0;
+  width:1600px;
+  height:900px;
   overflow:hidden;
   background:transparent;
+  transform-origin:top left;
 }
 
 /* UI */
@@ -44,7 +49,7 @@ html,body{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:10px;
+  gap:6px;
   padding:8px 16px;
   border-radius:18px;
   background:rgba(255,255,255,.10);
@@ -63,49 +68,23 @@ html,body{
 }
 
 #inventory{
-  gap:10px;
+  gap:6px;
   max-width:1050px;
   margin:0 auto;
 }
 
 .collect-slot{
-  width:42px;
-  height:42px;
+  width:38px;
+  height:38px;
   border-radius:50%;
-  border:2px solid rgba(255,255,255,.92);
-
-  background:
-    radial-gradient(circle at 30% 30%,
-      rgba(255,255,255,.22),
-      rgba(255,255,255,.05));
-
-  box-shadow:
-    inset 0 0 10px rgba(255,255,255,.12),
-    0 0 10px rgba(0,255,170,.18);
-
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-
-  opacity:.9;
-
-  transition:.25s;
+  border:2px solid rgba(255,255,255,.9);
+  opacity:.75;
 }
 
 .collect-slot.filled{
-  border:2px solid rgba(120,255,190,.95);
-
-  background:
-    url("https://github.com/kristeachme/bridge/blob/main/%D0%BB%D0%B5%D0%B4.png?raw=true")
-    center/78% no-repeat,
-
-    radial-gradient(circle,
-      rgba(0,255,170,.22),
-      rgba(255,255,255,.05));
-
-  box-shadow:
-    0 0 12px rgba(0,255,170,.55),
-    0 0 24px rgba(0,255,170,.35);
-
+  border:none;
+  background:url("https://github.com/kristeachme/bridge/blob/main/%D0%BB%D0%B5%D0%B4.png?raw=true") center/contain no-repeat;
+  filter:drop-shadow(0 0 10px #7ffcff);
   opacity:1;
 }
 
@@ -465,50 +444,9 @@ html,body{
 }
 
 
-
-/* FLOATING ICE BRIDGE */
-
-.platform{
-  animation:platformFloat 3.2s ease-in-out infinite;
-  transform-origin:center center;
-}
-
-.platform:nth-child(even){
-  animation-duration:3.8s;
-}
-
-.platform:nth-child(3n){
-  animation-duration:4.4s;
-}
-
-@keyframes platformFloat{
-
-  0%{
-    transform:translateY(0px) rotate(0deg);
-  }
-
-  25%{
-    transform:translateY(-2px) rotate(-0.4deg);
-  }
-
-  50%{
-    transform:translateY(1px) rotate(0.4deg);
-  }
-
-  75%{
-    transform:translateY(-1px) rotate(-0.3deg);
-  }
-
-  100%{
-    transform:translateY(0px) rotate(0deg);
-  }
-}
-
-
-
 #muteBtn{
-  width:46px;
-  height:46px;
+  width:54px;
+  height:54px;
   border:none;
   background:transparent;
   cursor:pointer;
@@ -530,6 +468,49 @@ html,body{
   transform:scale(1.08);
 }
 
+/* GLASS INVENTORY */
+
+.collect-slot{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.92);
+
+  background:
+    radial-gradient(circle at 30% 30%,
+      rgba(255,255,255,.22),
+      rgba(255,255,255,.05));
+
+  box-shadow:
+    inset 0 0 10px rgba(255,255,255,.12),
+    0 0 10px rgba(0,255,170,.18);
+
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+
+  opacity:.9;
+
+  transition:.25s;
+}
+
+.collect-slot.filled{
+  border:2px solid rgba(120,255,190,.95);
+
+  background:
+    url("https://github.com/kristeachme/bridge/blob/main/%D0%BB%D0%B5%D0%B4.png?raw=true")
+    center/78% no-repeat,
+
+    radial-gradient(circle,
+      rgba(0,255,170,.22),
+      rgba(255,255,255,.05));
+
+  box-shadow:
+    0 0 12px rgba(0,255,170,.55),
+    0 0 24px rgba(0,255,170,.35);
+
+  opacity:1;
+}
+
 </style>
 </head>
 
@@ -542,8 +523,8 @@ html,body{
     <div class="ui-panel" id="inventory"></div>
     <div class="ui-panel">
       <button id="muteBtn">
-      <img src="https://github.com/kristeachme/bridge/blob/main/aa478d14-bb81-4a17-80e0-3ce61d48fe54.png?raw=true" id="soundIcon">
-    </button>
+<img src="https://github.com/kristeachme/bridge/blob/main/aa478d14-bb81-4a17-80e0-3ce61d48fe54.png?raw=true" id="soundIcon">
+</button>
       <input type="range" id="volume" min="0" max="100" value="70">
     </div>
   </div>
@@ -841,61 +822,7 @@ function gameOver(){
 
   setTimeout(() => {
     startScreen.style.display = "flex";
-    
-
-function finalJump(){
-  hero.classList.remove("jump");
-  void hero.offsetWidth;
-  hero.classList.add("jump");
-
-  const currentX = parseInt(hero.style.left) || 0;
-  const currentY = parseInt(hero.style.top) || 0;
-
-  hero.style.left = (currentX + 220) + "px";
-  hero.style.top = (currentY - 40) + "px";
-}
-
-function startFireworks(){
-  for(let i = 0; i < 18; i++){
-    setTimeout(() => {
-      const firework = document.createElement("div");
-      firework.className = "firework";
-      firework.style.left = (window.innerWidth * (0.2 + Math.random() * 0.6)) + "px";
-      firework.style.top = (100 + Math.random() * 260) + "px";
-
-      game.appendChild(firework);
-
-      for(let j = 0; j < 24; j++){
-        const spark = document.createElement("div");
-        spark.className = "spark";
-
-        const angle = Math.PI * 2 * j / 24;
-        const distance = 80 + Math.random() * 70;
-
-        spark.style.setProperty("--dx", Math.cos(angle) * distance + "px");
-        spark.style.setProperty("--dy", Math.sin(angle) * distance + "px");
-
-        firework.appendChild(spark);
-      }
-
-      setTimeout(() => {
-        firework.remove();
-      }, 1600);
-
-    }, i * 180);
-  }
-}
-
-function updateActiveCollectible(){
-  collectibles.forEach(el => el.classList.remove("active-item"));
-
-  if(collectibles[state.step]){
-    collectibles[state.step].classList.add("active-item");
-  }
-}
-
-
-init();
+    init();
   }, 1700);
 }
 
@@ -1084,6 +1011,28 @@ function updateActiveCollectible(){
     collectibles[state.step].classList.add("active-item");
   }
 }
+
+
+
+function fitGameToIframe(){
+  const designW = 1600;
+  const designH = 900;
+
+  const scale = Math.min(
+    window.innerWidth / designW,
+    window.innerHeight / designH
+  );
+
+  const left = (window.innerWidth - designW * scale) / 2;
+  const top = (window.innerHeight - designH * scale) / 2;
+
+  game.style.transform = `scale(${scale})`;
+  game.style.left = left + "px";
+  game.style.top = top + "px";
+}
+
+window.addEventListener("resize", fitGameToIframe);
+fitGameToIframe();
 
 
 init();

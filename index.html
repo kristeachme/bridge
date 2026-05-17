@@ -511,6 +511,56 @@ html,body{
   opacity:1;
 }
 
+
+/* FIX: hearts stay visible */
+.heart{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  display:block;
+  flex:0 0 auto;
+  filter:drop-shadow(0 0 7px rgba(255,40,80,.72));
+}
+
+#lives{
+  min-width:190px;
+  gap:10px;
+}
+
+
+
+#lives{
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+}
+
+.heart{
+  width:42px !important;
+  height:42px !important;
+  display:block !important;
+  visibility:visible !important;
+  opacity:1;
+}
+
+
+#lives{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+}
+
+#lives .heart,
+.static-heart{
+  width:42px !important;
+  height:42px !important;
+  object-fit:contain !important;
+  display:block !important;
+  visibility:visible !important;
+  flex:0 0 auto !important;
+}
+
 </style>
 </head>
 
@@ -519,7 +569,11 @@ html,body{
 <div id="game">
 
   <div id="topUI">
-    <div class="ui-panel" id="lives"></div>
+    <div class="ui-panel" id="lives">
+      <img class="heart static-heart" src="https://github.com/kristeachme/bridge/blob/main/4.png?raw=true">
+      <img class="heart static-heart" src="https://github.com/kristeachme/bridge/blob/main/4.png?raw=true">
+      <img class="heart static-heart" src="https://github.com/kristeachme/bridge/blob/main/4.png?raw=true">
+    </div>
     <div class="ui-panel" id="inventory"></div>
     <div class="ui-panel">
       <button id="muteBtn">
@@ -826,12 +880,21 @@ function gameOver(){
   }, 1700);
 }
 
-function renderUI(){
-  livesBox.innerHTML = "";
 
-  for(let i = 0; i < state.lives; i++){
-    livesBox.innerHTML += `<img class="heart" src="${ASSETS.heart}">`;
-  }
+function renderUI(){
+  // В этой версии сердечки статичные и НЕ перерисовываются при сборе льдинок.
+  // Так они не исчезают. При ошибке мы только меняем прозрачность нужного сердца.
+  const hearts = livesBox.querySelectorAll(".static-heart");
+
+  hearts.forEach((heart, index) => {
+    if(index < state.lives){
+      heart.style.opacity = "1";
+      heart.style.filter = "drop-shadow(0 0 7px rgba(255,40,80,.72))";
+    } else {
+      heart.style.opacity = "0.25";
+      heart.style.filter = "grayscale(1)";
+    }
+  });
 
   inventory.innerHTML = "";
 

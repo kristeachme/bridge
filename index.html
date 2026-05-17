@@ -561,6 +561,39 @@ html,body{
   flex:0 0 auto !important;
 }
 
+
+/* SOFT CONSTANT PLATFORM SWAY */
+.platform img{
+  animation:softPlatformSway 2.8s ease-in-out infinite;
+  transform-origin:center center;
+}
+
+.platform:nth-of-type(even) img{
+  animation-duration:3.2s;
+}
+
+.platform:nth-of-type(3n) img{
+  animation-duration:3.6s;
+}
+
+@keyframes softPlatformSway{
+  0%,100%{
+    transform:translateY(0px) rotate(0deg);
+  }
+
+  25%{
+    transform:translateY(-2px) rotate(-0.6deg);
+  }
+
+  50%{
+    transform:translateY(1px) rotate(0.6deg);
+  }
+
+  75%{
+    transform:translateY(-1px) rotate(-0.4deg);
+  }
+}
+
 </style>
 </head>
 
